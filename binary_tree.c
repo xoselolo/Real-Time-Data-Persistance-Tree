@@ -1,6 +1,3 @@
-//
-// Created by xoselolo on 24/09/2020.
-//
 
 #include "binary_tree.h"
 

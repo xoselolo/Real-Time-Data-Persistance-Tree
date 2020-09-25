@@ -83,6 +83,9 @@
 		<Unit filename="C:/Users/Usuario/CLionProjects/distribuida_projects/transactions_binary_tree/main.c">
 			<Option target="transactions_binary_tree"/>
 		</Unit>
+		<Unit filename="C:/Users/Usuario/CLionProjects/distribuida_projects/transactions_binary_tree/types.h">
+			<Option target="transactions_binary_tree"/>
+		</Unit>
 		<Unit filename="C:/Users/Usuario/CLionProjects/distribuida_projects/transactions_binary_tree/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>

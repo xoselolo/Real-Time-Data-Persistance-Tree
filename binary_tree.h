@@ -1,6 +1,4 @@
-//
-// Created by xoselolo on 24/09/2020.
-//
+
 
 #ifndef TRANSACTIONS_BINARY_TREE_BINARY_TREE_H
 #define TRANSACTIONS_BINARY_TREE_BINARY_TREE_H
