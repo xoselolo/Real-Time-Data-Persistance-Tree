@@ -45,4 +45,33 @@ void TRANSACTION_BINARY_TREE_add(Node** node, int id_transaction);
  */
 void TRANSACTION_BINARY_TREE_destroy(Node** node);
 
+/**
+ * ----------------- Example of use -----------------
+
+    Node* root = NULL;
+
+    TRANSACTION_BINARY_TREE_add(&root, 4);
+    TRANSACTION_BINARY_TREE_add(&root, 6);
+    TRANSACTION_BINARY_TREE_add(&root, 3);
+    TRANSACTION_BINARY_TREE_add(&root, 2);
+    TRANSACTION_BINARY_TREE_add(&root, 1);
+    TRANSACTION_BINARY_TREE_add(&root, 10);
+    TRANSACTION_BINARY_TREE_add(&root, 8);
+
+    if(TRANSACTION_BINARY_TREE_exists(root, 3)){
+        printf("Exists!\n");
+    }else{
+        printf("Not exists!\n");
+    }
+
+    TRANSACTION_BINARY_TREE_destroy(&root);
+
+    if(TRANSACTION_BINARY_TREE_exists(root, 3)){
+        printf("Exists!\n");
+    }else{
+        printf("Not exists!\n");
+    }
+
+ */
+
 #endif //TRANSACTIONS_BINARY_TREE_BINARY_TREE_H
