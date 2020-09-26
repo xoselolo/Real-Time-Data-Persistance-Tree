@@ -1,7 +1,8 @@
 #include <stdio.h>
-#include "binary_tree.h"
 
 int main() {
+
+    int a = 0;
 
     printf("Hello World!\n");
 

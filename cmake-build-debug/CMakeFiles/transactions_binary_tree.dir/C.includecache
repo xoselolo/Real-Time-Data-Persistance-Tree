@@ -13,6 +13,16 @@ stdlib.h
 C:/Users/Usuario/CLionProjects/distribuida_projects/transactions_binary_tree/main.c
 stdio.h
 -
+assert.h
+-
 binary_tree.h
 C:/Users/Usuario/CLionProjects/distribuida_projects/transactions_binary_tree/binary_tree.h
+
+C:/Users/Usuario/CLionProjects/distribuida_projects/transactions_binary_tree/transaction.c
+assert.h
+-
+transaction.h
+C:/Users/Usuario/CLionProjects/distribuida_projects/transactions_binary_tree/transaction.h
+
+C:/Users/Usuario/CLionProjects/distribuida_projects/transactions_binary_tree/transaction.h
 

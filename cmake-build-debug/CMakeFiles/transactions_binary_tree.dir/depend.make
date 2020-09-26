@@ -7,3 +7,6 @@ CMakeFiles/transactions_binary_tree.dir/binary_tree.c.obj: ../binary_tree.h
 CMakeFiles/transactions_binary_tree.dir/main.c.obj: ../binary_tree.h
 CMakeFiles/transactions_binary_tree.dir/main.c.obj: ../main.c
 
+CMakeFiles/transactions_binary_tree.dir/transaction.c.obj: ../transaction.c
+CMakeFiles/transactions_binary_tree.dir/transaction.c.obj: ../transaction.h
+

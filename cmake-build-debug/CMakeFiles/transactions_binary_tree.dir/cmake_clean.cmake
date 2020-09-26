@@ -1,6 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/transactions_binary_tree.dir/binary_tree.c.obj"
   "CMakeFiles/transactions_binary_tree.dir/main.c.obj"
+  "CMakeFiles/transactions_binary_tree.dir/transaction.c.obj"
   "libtransactions_binary_tree.dll.a"
   "transactions_binary_tree.exe"
   "transactions_binary_tree.exe.manifest"

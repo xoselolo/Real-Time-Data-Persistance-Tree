@@ -176,6 +176,33 @@ main.c.s:
 	$(MAKE) -f CMakeFiles\transactions_binary_tree.dir\build.make CMakeFiles/transactions_binary_tree.dir/main.c.s
 .PHONY : main.c.s
 
+transaction.obj: transaction.c.obj
+
+.PHONY : transaction.obj
+
+# target to build an object file
+transaction.c.obj:
+	$(MAKE) -f CMakeFiles\transactions_binary_tree.dir\build.make CMakeFiles/transactions_binary_tree.dir/transaction.c.obj
+.PHONY : transaction.c.obj
+
+transaction.i: transaction.c.i
+
+.PHONY : transaction.i
+
+# target to preprocess a source file
+transaction.c.i:
+	$(MAKE) -f CMakeFiles\transactions_binary_tree.dir\build.make CMakeFiles/transactions_binary_tree.dir/transaction.c.i
+.PHONY : transaction.c.i
+
+transaction.s: transaction.c.s
+
+.PHONY : transaction.s
+
+# target to generate assembly for a file
+transaction.c.s:
+	$(MAKE) -f CMakeFiles\transactions_binary_tree.dir\build.make CMakeFiles/transactions_binary_tree.dir/transaction.c.s
+.PHONY : transaction.c.s
+
 # Help Target
 help:
 	@echo The following are some of the valid targets for this Makefile:
@@ -191,6 +218,9 @@ help:
 	@echo ... main.obj
 	@echo ... main.i
 	@echo ... main.s
+	@echo ... transaction.obj
+	@echo ... transaction.i
+	@echo ... transaction.s
 .PHONY : help
 
 

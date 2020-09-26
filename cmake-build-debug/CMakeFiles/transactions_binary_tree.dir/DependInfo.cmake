@@ -6,6 +6,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_CHECK_C
   "C:/Users/Usuario/CLionProjects/distribuida_projects/transactions_binary_tree/binary_tree.c" "C:/Users/Usuario/CLionProjects/distribuida_projects/transactions_binary_tree/cmake-build-debug/CMakeFiles/transactions_binary_tree.dir/binary_tree.c.obj"
   "C:/Users/Usuario/CLionProjects/distribuida_projects/transactions_binary_tree/main.c" "C:/Users/Usuario/CLionProjects/distribuida_projects/transactions_binary_tree/cmake-build-debug/CMakeFiles/transactions_binary_tree.dir/main.c.obj"
+  "C:/Users/Usuario/CLionProjects/distribuida_projects/transactions_binary_tree/transaction.c" "C:/Users/Usuario/CLionProjects/distribuida_projects/transactions_binary_tree/cmake-build-debug/CMakeFiles/transactions_binary_tree.dir/transaction.c.obj"
   )
 set(CMAKE_C_COMPILER_ID "GNU")
 
