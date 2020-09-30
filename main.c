@@ -1,10 +1,13 @@
 #include <stdio.h>
+#include "config.h"
 
-int main() {
+int main(int argc, char** argv) {
 
-    int a = 0;
+    Server me;
 
-    printf("Hello World!\n");
+    me = readConfig(argv[1]);
+
+    printf("Server id: %d\n", me.id_server);
 
     return 0;
 }
