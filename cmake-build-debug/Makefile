@@ -149,6 +149,33 @@ binary_tree.c.s:
 	$(MAKE) -f CMakeFiles\transactions_binary_tree.dir\build.make CMakeFiles/transactions_binary_tree.dir/binary_tree.c.s
 .PHONY : binary_tree.c.s
 
+config.obj: config.c.obj
+
+.PHONY : config.obj
+
+# target to build an object file
+config.c.obj:
+	$(MAKE) -f CMakeFiles\transactions_binary_tree.dir\build.make CMakeFiles/transactions_binary_tree.dir/config.c.obj
+.PHONY : config.c.obj
+
+config.i: config.c.i
+
+.PHONY : config.i
+
+# target to preprocess a source file
+config.c.i:
+	$(MAKE) -f CMakeFiles\transactions_binary_tree.dir\build.make CMakeFiles/transactions_binary_tree.dir/config.c.i
+.PHONY : config.c.i
+
+config.s: config.c.s
+
+.PHONY : config.s
+
+# target to generate assembly for a file
+config.c.s:
+	$(MAKE) -f CMakeFiles\transactions_binary_tree.dir\build.make CMakeFiles/transactions_binary_tree.dir/config.c.s
+.PHONY : config.c.s
+
 main.obj: main.c.obj
 
 .PHONY : main.obj
@@ -215,6 +242,9 @@ help:
 	@echo ... binary_tree.obj
 	@echo ... binary_tree.i
 	@echo ... binary_tree.s
+	@echo ... config.obj
+	@echo ... config.i
+	@echo ... config.s
 	@echo ... main.obj
 	@echo ... main.i
 	@echo ... main.s

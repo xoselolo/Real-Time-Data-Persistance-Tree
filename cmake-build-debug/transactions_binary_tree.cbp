@@ -80,6 +80,12 @@
 		<Unit filename="C:/Users/Usuario/CLionProjects/distribuida_projects/transactions_binary_tree/binary_tree.h">
 			<Option target="transactions_binary_tree"/>
 		</Unit>
+		<Unit filename="C:/Users/Usuario/CLionProjects/distribuida_projects/transactions_binary_tree/config.c">
+			<Option target="transactions_binary_tree"/>
+		</Unit>
+		<Unit filename="C:/Users/Usuario/CLionProjects/distribuida_projects/transactions_binary_tree/config.h">
+			<Option target="transactions_binary_tree"/>
+		</Unit>
 		<Unit filename="C:/Users/Usuario/CLionProjects/distribuida_projects/transactions_binary_tree/main.c">
 			<Option target="transactions_binary_tree"/>
 		</Unit>

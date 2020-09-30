@@ -30,6 +30,7 @@ typedef struct{
     int id_server; // Config
     Direction my_direction; // Config
     int id_server_next; // to make a petition or resend it
+    int is_read_only;
 
     // --------- SOCKET 1 - Client (active) ---------
     int fd_active;
