@@ -30,26 +30,24 @@ typedef struct{
     int id_server; // Config
     Direction my_direction; // Config
     int id_server_next; // to make a petition or resend it
-    int is_read_only;
+    char is_read_only;
+    int sleep_time;
 
-    // --------- SOCKET 1 - Client (active) ---------
-    int fd_active;
-    struct sockaddr_in socket_1_Config;
-
-    // --------- SOCKET 2 - Server (passive) ---------
-    int fd_passive;
-    struct sockaddr_in socket_2_Config;
-
-    // --------- SOCKET 3 - Server (ping) ---------
-    int fd_ping;
-    struct sockaddr_in socket_3_Config;
-
-    int next_server;
     Data data; // Initially 0,0
     Node** transaction_trees; // Config (empty trees)
     Operation operation; // Config
     int total_servers; // Config + increment when added new servers
     Direction* servers_directions; // Config + new added servers {[0]->[ip,port] | [1]->[ip,port] ... [N]->[ip,port]}
+
+    // --------- SOCKET 1 - Client (active) ---------
+    int fd_active;
+
+    // --------- SOCKET 2 - Server (passive) ---------
+    int fd_passive;
+
+    // --------- SOCKET 3 - Server (ping) ---------
+    int fd_ping;
+
 }Server;
 
 
