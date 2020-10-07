@@ -22,7 +22,7 @@ void TOOLS_open_psocket(int* socket_fd, char* ip, int port) {
     }
     s_addr.sin_port = htons(port);
 
-    inet_aton(ip, &(s_addr.sin_addr));
+    s_addr.sin_addr.s_addr = inet_addr(ip);
 
     //Associar el socket amb l'adreça i el port indicats
     if (bind(*socket_fd, (void*)&s_addr, sizeof(s_addr)) < 0) {
@@ -55,7 +55,7 @@ int TOOLS_connect_server(int* socket_fd, char* ip, int port) {
         raise(SIGINT);
     }
     s_addr.sin_port = htons(port);
-    inet_aton(ip, &(s_addr.sin_addr));
+    s_addr.sin_addr.s_addr = inet_addr(ip);
 
     //Connectar amb el servidor
     if (connect(*socket_fd, (void*)&s_addr, sizeof(s_addr)) < 0) {

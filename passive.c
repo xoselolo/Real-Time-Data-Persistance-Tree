@@ -1,4 +1,4 @@
-#include "tools.h"
+
 #include "passive.h"
 
 void * PASSIVE_server(void * arg) {
@@ -15,11 +15,15 @@ void * PASSIVE_server(void * arg) {
     write(1, "socket opened\n", strlen("socket opened\n"));
 
     while (1) {
-        client_fd = accept(server_fd, &s_addr, len);
+        client_fd = accept(server_fd, (void *) &s_addr, &len);
         write(1, "client accepted\n", strlen("client accepted\n"));
         memset(&frame, 0, sizeof(Frame));
         
         size = read(client_fd, &frame.type, 1);
+
+        if (size != 1) {
+            write(1,"errror connexio\n", strlen("errror connexio\n"));
+        }
 
         if (frame.type == 'R') {
             frame.data = TOOLS_read_until(client_fd, '\0');
