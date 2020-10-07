@@ -1,6 +1,6 @@
 SOURCES  = *.c
 INCLUDES = *.h
-OBJECTS  = ex0.o
+
 
 CFLAGS = -Wall -Wextra
 LDLIBS = -lpthread
