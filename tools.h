@@ -19,7 +19,7 @@
 
 #define BACKLOG 64
 
-void TOOLS_open_psocket(int* socket_fd, char* ip, in_port_t port);
+void TOOLS_open_psocket(int* socket_fd, char* ip, int port);
 char* TOOLS_read_until(int fd, char end);
 
 #endif /* _TOOLS_H_ */

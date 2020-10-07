@@ -1,13 +1,18 @@
-#include <stdio.h>
+#include "types.h"
+#include "passive.h"
 #include "config.h"
 
-int main(int argc, char** argv) {
+Server server;
 
-    Server me;
+int main(int argc, char** argv) {
+    pthread_t t_passive, t_ping;
 
     me = readConfig(argv[1]);
 
-    printf("Server id: %d\n", me.id_server);
+    server.my_direction.ip_address="127.0.0.1";
+    server.my_direction.passive_port = 8840;
+
+    pthread_create(&t_passive, NULL, PASSIVE_server, &server.my_direction);
 
     return 0;
 }
