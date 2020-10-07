@@ -6,4 +6,5 @@ int TRANSACTION_generateId();
 
 char initialized = 0;
 
+
 #endif //TRANSACTIONS_BINARY_TREE_TRANSACTION_H

@@ -6,6 +6,7 @@
 #include "types.h"
 #include "tools.h"
 
+
 Server readConfig(char* filename);
 
 #endif //TRANSACTIONS_BINARY_TREE_CONFIG_H
