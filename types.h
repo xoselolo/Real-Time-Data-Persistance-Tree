@@ -17,14 +17,19 @@ typedef struct{
 typedef struct{
     int version; // Version of the data
     int value; // Value of the data
-}Data;
+} Data;
+
+typedef struct{
+    char type;
+    char *data;
+} Frame;
 
 typedef struct {
     char* ip_address; // Config
     int active_port; // Config
     int passive_port; // Config
     int ping_port; // Config
-}Direction;
+} Direction;
 
 typedef struct{
     int id_server; // Config
