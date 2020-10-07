@@ -6,23 +6,37 @@
 
 #IncludeRegexTransform: 
 
-C:/Users/Usuario/CLionProjects/distribuida_projects/transactions_binary_tree/binary_tree.h
-stdlib.h
--
+C:/Users/Usuario/CLionProjects/distribuida_projects/transactions_binary_tree/tools.c
+tools.h
+C:/Users/Usuario/CLionProjects/distribuida_projects/transactions_binary_tree/tools.h
 
-C:/Users/Usuario/CLionProjects/distribuida_projects/transactions_binary_tree/main.c
+C:/Users/Usuario/CLionProjects/distribuida_projects/transactions_binary_tree/tools.h
+arpa/inet.h
+-
+ctype.h
+-
+errno.h
+-
+fcntl.h
+-
+netdb.h
+-
+netinet/in.h
+-
+pthread.h
+-
+signal.h
+-
 stdio.h
 -
-assert.h
+stdlib.h
 -
-binary_tree.h
-C:/Users/Usuario/CLionProjects/distribuida_projects/transactions_binary_tree/binary_tree.h
-
-C:/Users/Usuario/CLionProjects/distribuida_projects/transactions_binary_tree/transaction.c
-assert.h
+string.h
 -
-transaction.h
-C:/Users/Usuario/CLionProjects/distribuida_projects/transactions_binary_tree/transaction.h
-
-C:/Users/Usuario/CLionProjects/distribuida_projects/transactions_binary_tree/transaction.h
+sys/socket.h
+-
+sys/types.h
+-
+unistd.h
+-
 

@@ -4,8 +4,20 @@
 CMakeFiles/transactions_binary_tree.dir/binary_tree.c.obj: ../binary_tree.c
 CMakeFiles/transactions_binary_tree.dir/binary_tree.c.obj: ../binary_tree.h
 
+CMakeFiles/transactions_binary_tree.dir/config.c.obj: ../binary_tree.h
+CMakeFiles/transactions_binary_tree.dir/config.c.obj: ../config.c
+CMakeFiles/transactions_binary_tree.dir/config.c.obj: ../config.h
+CMakeFiles/transactions_binary_tree.dir/config.c.obj: ../tools.h
+CMakeFiles/transactions_binary_tree.dir/config.c.obj: ../types.h
+
 CMakeFiles/transactions_binary_tree.dir/main.c.obj: ../binary_tree.h
+CMakeFiles/transactions_binary_tree.dir/main.c.obj: ../config.h
 CMakeFiles/transactions_binary_tree.dir/main.c.obj: ../main.c
+CMakeFiles/transactions_binary_tree.dir/main.c.obj: ../tools.h
+CMakeFiles/transactions_binary_tree.dir/main.c.obj: ../types.h
+
+CMakeFiles/transactions_binary_tree.dir/tools.c.obj: ../tools.c
+CMakeFiles/transactions_binary_tree.dir/tools.c.obj: ../tools.h
 
 CMakeFiles/transactions_binary_tree.dir/transaction.c.obj: ../transaction.c
 CMakeFiles/transactions_binary_tree.dir/transaction.c.obj: ../transaction.h

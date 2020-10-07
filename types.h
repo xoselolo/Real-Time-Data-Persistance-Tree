@@ -20,6 +20,7 @@ typedef struct{
 }Data;
 
 typedef struct {
+    int id_server; // Config
     char* ip_address; // Config
     int active_port; // Config
     int passive_port; // Config
@@ -27,7 +28,6 @@ typedef struct {
 }Direction;
 
 typedef struct{
-    int id_server; // Config
     Direction my_direction; // Config
     int id_server_next; // to make a petition or resend it
     char is_read_only;

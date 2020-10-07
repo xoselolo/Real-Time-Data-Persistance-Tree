@@ -2,8 +2,9 @@
 #ifndef TRANSACTIONS_BINARY_TREE_CONFIG_H
 #define TRANSACTIONS_BINARY_TREE_CONFIG_H
 
-#include "types.h"
 #include <stdio.h>
+#include "types.h"
+#include "tools.h"
 
 Server readConfig(char* filename);
 

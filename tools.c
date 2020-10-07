@@ -75,7 +75,7 @@ char* TOOLS_read_until(int fd, char end) {
     while (1) {
         size = read(fd, &c, sizeof(char));
 
-        if (c != end && size > 0 && c != '&') {
+        if (c != end && size > 0) {
             string = (char*)realloc(string, sizeof(char) * (i + 2));
             string[i++] = c;
         } else {

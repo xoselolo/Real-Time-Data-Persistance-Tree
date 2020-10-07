@@ -203,6 +203,33 @@ main.c.s:
 	$(MAKE) -f CMakeFiles\transactions_binary_tree.dir\build.make CMakeFiles/transactions_binary_tree.dir/main.c.s
 .PHONY : main.c.s
 
+tools.obj: tools.c.obj
+
+.PHONY : tools.obj
+
+# target to build an object file
+tools.c.obj:
+	$(MAKE) -f CMakeFiles\transactions_binary_tree.dir\build.make CMakeFiles/transactions_binary_tree.dir/tools.c.obj
+.PHONY : tools.c.obj
+
+tools.i: tools.c.i
+
+.PHONY : tools.i
+
+# target to preprocess a source file
+tools.c.i:
+	$(MAKE) -f CMakeFiles\transactions_binary_tree.dir\build.make CMakeFiles/transactions_binary_tree.dir/tools.c.i
+.PHONY : tools.c.i
+
+tools.s: tools.c.s
+
+.PHONY : tools.s
+
+# target to generate assembly for a file
+tools.c.s:
+	$(MAKE) -f CMakeFiles\transactions_binary_tree.dir\build.make CMakeFiles/transactions_binary_tree.dir/tools.c.s
+.PHONY : tools.c.s
+
 transaction.obj: transaction.c.obj
 
 .PHONY : transaction.obj
@@ -248,6 +275,9 @@ help:
 	@echo ... main.obj
 	@echo ... main.i
 	@echo ... main.s
+	@echo ... tools.obj
+	@echo ... tools.i
+	@echo ... tools.s
 	@echo ... transaction.obj
 	@echo ... transaction.i
 	@echo ... transaction.s
