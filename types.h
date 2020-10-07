@@ -9,6 +9,13 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 
+#define BOLD    "\033[1m"
+#define BOLDGREEN "\033[1m\033[32m"
+#define BOLDRED   "\033[1m\033[31m"
+#define RESET     "\033[0m"
+
+#define ERR_ARGS    BOLDRED "Error, missing arguments." RESET " Usage: ./ex0 ./config/server_config.txt\n"
+
 typedef struct{
     char operator; // + - * /
     int operand; // 1, 2, 3, 4, 5 ...

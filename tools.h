@@ -23,5 +23,6 @@
 
 void TOOLS_open_psocket(int* socket_fd, char* ip, int port);
 char* TOOLS_read_until(int fd, char end);
+int TOOLS_connect_server(int* socket_fd, char* ip, int port);
 
 #endif /* _TOOLS_H_ */

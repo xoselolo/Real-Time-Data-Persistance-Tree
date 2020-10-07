@@ -62,7 +62,7 @@ int TOOLS_connect_server(int* socket_fd, char* ip, int port) {
         perror("socket connection");
         close(*socket_fd);
         *socket_fd = -1;
-        return -1;
+        return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;
 }
