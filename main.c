@@ -7,7 +7,9 @@ Server server;
 int main(int argc, char** argv) {
     pthread_t t_passive, t_ping;
 
-    me = readConfig(argv[1]);
+    server = readConfig(argv[1]);
+
+    printf("Server sleep time:")
 
     server.my_direction.ip_address="127.0.0.1";
     server.my_direction.passive_port = 8840;

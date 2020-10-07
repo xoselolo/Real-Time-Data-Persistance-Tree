@@ -59,5 +59,8 @@ Server readConfig(char* filename){
                 me.servers_directions = realloc(me.servers_directions, sizeof(Direction) * (i + 1));
             }
         }
+
+        me.total_servers = i + 1;
     }
+    return me;
 }
