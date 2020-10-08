@@ -78,6 +78,7 @@ char* TOOLS_read_until(int fd, char end) {
         if (c != end && size > 0) {
             string = (char*)realloc(string, sizeof(char) * (i + 2));
             string[i++] = c;
+            //printf("%c", c);
         } else {
             i++;  //Pel \0
             break;

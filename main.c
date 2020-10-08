@@ -14,5 +14,20 @@ int main(int argc, char** argv) {
 
     pthread_create(&t_passive, NULL, PASSIVE_server, &server.my_direction);
 
+    // TODO: Create ping thread
+
+    if (server.is_read_only == 'R'){
+        for(int i = 0; i < 10; i++){
+            // TODO: GET value
+            // TODO: UPDATE value
+            sleep(server.sleep_time);
+        }
+    }else{
+        for(int i = 0; i < 10; i++){
+            // TODO: GET value
+            sleep(server.sleep_time);
+        }
+    }
+
     return 0;
 }

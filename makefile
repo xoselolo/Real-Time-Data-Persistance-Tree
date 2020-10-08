@@ -1,8 +1,8 @@
 SOURCES  = *.c
 INCLUDES = *.h
+OBJECTS = binary_tree.o config.o passive.o tools.o transaction.o
 
-
-CFLAGS = -Wall -Wextra
+CFLAGS = -Wall -Wextra -Wno-error
 LDLIBS = -lpthread
 
 all: Ex0
