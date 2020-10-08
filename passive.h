@@ -2,6 +2,7 @@
 #define _PASSIVE_H_
 
 #include "types.h"
+#include "tools.h"
 
 void * PASSIVE_server(void * arg);
 
