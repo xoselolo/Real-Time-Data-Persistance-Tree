@@ -4,8 +4,6 @@
 Server readConfig(char* filename){
     Server me;
     int fdReadConfig = open(filename, O_RDONLY);
-    int end = 0;
-    int i = 0;
     char* aux;
     char salt;
 
@@ -52,40 +50,30 @@ Server readConfig(char* filename){
         me.operation.operand = atoi(aux);
         printf("\tOperand: %d\n", me.operation.operand);
 
-        me.total_servers = 1; // Probably deleted
-        i = 0;
+        me.total_servers = 1; // Probably updated when connection
 
         me.servers_directions = (Direction*)malloc(sizeof(Direction)); // Nomes per al primer servidor (al que es connecta inicialment)
-        while (end == 0){
-            me.servers_directions[i].ip_address = TOOLS_read_until(fdReadConfig, '\n');
 
-            if (me.servers_directions[i].ip_address[0] == '\0'){
-                me.servers_directions = realloc(me.servers_directions, sizeof(Direction) * i);
+        me.servers_directions[0].ip_address = TOOLS_read_until(fdReadConfig, '\n');
+        printf("\t\tIp address: %s\n", me.servers_directions[0].ip_address);
 
-                end = 1;
-                // No more
-                printf("End of config file!\n");
-            }else{
-                printf("\t\tIp address: %s\n", me.servers_directions[0].ip_address);
+        aux = TOOLS_read_until(fdReadConfig, '\n');
+        printf("\t\tId server: %d\n", atoi(aux));
+        me.servers_directions->id_server = atoi(aux);
 
-                aux = TOOLS_read_until(fdReadConfig, '\n');
-                printf("\t\tId server: %d\n", atoi(aux));
-                me.servers_directions->id_server = atoi(aux);
+        aux = TOOLS_read_until(fdReadConfig, '\n');
+        printf("\t\tPassive port: %d\n", atoi(aux));
+        me.servers_directions->passive_port = atoi(aux);
 
-                aux = TOOLS_read_until(fdReadConfig, '\n');
-                printf("\t\tPassive port: %d\n", atoi(aux));
-                me.servers_directions->passive_port = atoi(aux);
+        aux = TOOLS_read_until(fdReadConfig, '\n');
+        printf("\t\tPing port: %d\n", atoi(aux));
+        me.servers_directions->ping_port = atoi(aux);
 
-                aux = TOOLS_read_until(fdReadConfig, '\n');
-                printf("\t\tPing port: %d\n", atoi(aux));
-                me.servers_directions->ping_port = atoi(aux);
-
-                i++;
-                me.servers_directions = realloc(me.servers_directions, sizeof(Direction) * (i + 1));
-            }
-        }
-
-        me.total_servers = i + 1;
+        me.next_server_direction.id_server = me.servers_directions->id_server;
+        me.next_server_direction.passive_port = me.servers_directions->passive_port;
+        me.next_server_direction.ping_port = me.servers_directions->ping_port;
+        strcpy(me.next_server_direction.ip_address, me.servers_directions->ip_address);
     }
+
     return me;
 }
