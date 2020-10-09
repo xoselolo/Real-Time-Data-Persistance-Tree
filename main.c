@@ -16,6 +16,7 @@ int main(int argc, char** argv) {
 
     // TODO: Create ping thread
 
+    // TODO: Connect to next server passive port
     if (server.is_read_only == 'R'){
         for(int i = 0; i < 10; i++){
             // TODO: GET value
