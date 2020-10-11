@@ -2,9 +2,9 @@
 #include "passive.h"
 #include "types.h"
 
-Server server;
-
 int main(int argc, char** argv) {
+
+    Server server;
 
     if (argc != 2){
         printf("---- ERROR: Config file name must be provided as argument!\n");
@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
 
         // TODO: connection protocol
 
-        pthread_create(&t_passive, NULL, PASSIVE_server, &server.my_direction);
+        pthread_create(&t_passive, NULL, PASSIVE_server, &server);
 
         // TODO: Create ping thread
 
@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
     }
 
 
-    int fd_client;
+    //int fd_client;
     //TOOLS_connect_server(&fd_client, "127.0.0.1", 8840);
 
     while (1) {

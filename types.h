@@ -2,12 +2,21 @@
 #ifndef TRANSACTIONS_BINARY_TREE_TYPES_H
 #define TRANSACTIONS_BINARY_TREE_TYPES_H
 
-#include "binary_tree.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <fcntl.h>
+#include <time.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <errno.h>
+#include <netdb.h>
+#include <pthread.h>
+#include <signal.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
 
 #define BOLD    "\033[1m"
 #define BOLDGREEN "\033[1m\033[32m"
@@ -15,6 +24,7 @@
 #define RESET     "\033[0m"
 
 #define ERR_ARGS    BOLDRED "Error, missing arguments." RESET " Usage: ./ex0 ./config/server_config.txt\n"
+#define ERR_CONN    BOLDRED "Connection to client failed" RESET
 
 typedef struct{
     char operator; // + - * /
@@ -38,6 +48,12 @@ typedef struct {
     int passive_port; // Config
     int ping_port; // Config
 } Direction;
+
+typedef struct Node{
+    int id_transaction;
+    struct Node* smaller;
+    struct Node* bigger;
+}Node;
 
 typedef struct{
     Direction my_direction; // Config

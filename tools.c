@@ -89,76 +89,13 @@ char* TOOLS_read_until(int fd, char end) {
     return string;
 }
 
-/**
- * [ R id_server # id_trans ]
- */
-int TOOLS_sendReadPetitionTrama(int fd, int id_server, int id_trans){
-    int n;
-
-    n = write(fd, "R", sizeof(char));
-    if(n <= 0){
-        return -1;
+Direction TOOLS_findDirection(Direction * directions, int n_directions, int id_server) {
+    int i = 0;
+    Direction dir;
+    dir.id_server = -1;
+    for (i = 0; i < n_directions; i++) {
+        if (directions[i].id_server == id_server)
+            return directions[i];
     }
-    n = write(fd, &id_server, sizeof(int));
-    if(n <= 0){
-        return -1;
-    }
-    n = write(fd, "#", sizeof(char));
-    if(n <= 0){
-        return -1;
-    }
-    n = write(fd, &id_trans, sizeof(int));
-    if(n <= 0){
-        return -1;
-    }
-    n = write(fd, "#", sizeof(char));
-    if(n <= 0){
-        return -1;
-    }
-    return EXIT_SUCCESS;
-}
-
-/**
- * [ R id_server # id_trans # version # value # ]
- */
-int TOOLS_sendReadResponseTrama(int fd, int id_server, int id_trans, int version, int value){
-    int n;
-
-    n = write(fd, "R", sizeof(char));
-    if(n <= 0){
-        return -1;
-    }
-    n = write(fd, &id_server, sizeof(int));
-    if(n <= 0){
-        return -1;
-    }
-    n = write(fd, "#", sizeof(char));
-    if(n <= 0){
-        return -1;
-    }
-    n = write(fd, &id_trans, sizeof(int));
-    if(n <= 0){
-        return -1;
-    }
-    n = write(fd, "#", sizeof(char));
-    if(n <= 0){
-        return -1;
-    }
-    n = write(fd, &version, sizeof(int));
-    if(n <= 0){
-        return -1;
-    }
-    n = write(fd, "#", sizeof(char));
-    if(n <= 0){
-        return -1;
-    }
-    n = write(fd, &value, sizeof(int));
-    if(n <= 0){
-        return -1;
-    }
-    n = write(fd, "#", sizeof(char));
-    if(n <= 0){
-        return -1;
-    }
-    return EXIT_SUCCESS;
+    return dir;
 }
