@@ -118,6 +118,9 @@ int TOOLS_sendReadPetitionTrama(int fd, int id_server, int id_trans){
     return EXIT_SUCCESS;
 }
 
+/**
+ * [ R id_server # id_trans # version # value # ]
+ */
 int TOOLS_sendReadResponseTrama(int fd, int id_server, int id_trans, int version, int value){
     int n;
 
