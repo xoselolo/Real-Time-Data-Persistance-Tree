@@ -18,6 +18,16 @@ Server readConfig(char* filename){
         read(fdReadConfig, &salt, sizeof(char)); // \n
         printf("\tRead only: %c\n", me.is_read_only);
 
+        if(me.is_read_only == 'U'){
+            read(fdReadConfig, &(me.operation.operator), sizeof(char));
+            read(fdReadConfig, &salt, sizeof(char)); // \n
+            printf("\tOperator: %c\n", me.operation.operator);
+
+            aux = TOOLS_read_until(fdReadConfig, '\n');
+            me.operation.operand = atoi(aux);
+            printf("\tOperand: %d\n", me.operation.operand);
+        }
+
         me.my_direction.ip_address = TOOLS_read_until(fdReadConfig, '\n');
         printf("\tIp address: %s\n", me.my_direction.ip_address);
 
@@ -42,37 +52,46 @@ Server readConfig(char* filename){
 
         me.transaction_trees = (Node**)malloc(sizeof(Node*)); // Reservem un arbre nomes per al primer servidor on ens connectem
 
-        read(fdReadConfig, &(me.operation.operator), sizeof(char));
-        read(fdReadConfig, &salt, sizeof(char)); // \n
-        printf("\tOperator: %c\n", me.operation.operator);
-
-        aux = TOOLS_read_until(fdReadConfig, '\n');
-        me.operation.operand = atoi(aux);
-        printf("\tOperand: %d\n", me.operation.operand);
-
         me.total_servers = 1; // Probably updated when connection
 
         me.servers_directions = (Direction*)malloc(sizeof(Direction)); // Nomes per al primer servidor (al que es connecta inicialment)
 
         me.servers_directions[0].ip_address = TOOLS_read_until(fdReadConfig, '\n');
-        printf("\t\tIp address: %s\n", me.servers_directions[0].ip_address);
+        if(me.servers_directions[0].ip_address[0] == '\0'){
+            // there is no server to connect to (we're the first)
+            free(me.servers_directions);
+            me.next_server_direction.id_server = -1;
+        }else{
+            // there is a server to connect to
+            printf("\t\tIp address: %s\n", me.servers_directions[0].ip_address);
 
-        aux = TOOLS_read_until(fdReadConfig, '\n');
-        printf("\t\tId server: %d\n", atoi(aux));
-        me.servers_directions->id_server = atoi(aux);
+            aux = TOOLS_read_until(fdReadConfig, '\n');
+            printf("\t\tId server: %d\n", atoi(aux));
+            me.servers_directions[0].id_server = atoi(aux);
 
-        aux = TOOLS_read_until(fdReadConfig, '\n');
-        printf("\t\tPassive port: %d\n", atoi(aux));
-        me.servers_directions->passive_port = atoi(aux);
+            aux = TOOLS_read_until(fdReadConfig, '\n');
+            printf("\t\tPassive port: %d\n", atoi(aux));
+            me.servers_directions[0].passive_port = atoi(aux);
 
-        aux = TOOLS_read_until(fdReadConfig, '\n');
-        printf("\t\tPing port: %d\n", atoi(aux));
-        me.servers_directions->ping_port = atoi(aux);
+            aux = TOOLS_read_until(fdReadConfig, '\n');
+            printf("\t\tPing port: %d\n", atoi(aux));
+            me.servers_directions[0].ping_port = atoi(aux);
 
-        me.next_server_direction.id_server = me.servers_directions->id_server;
-        me.next_server_direction.passive_port = me.servers_directions->passive_port;
-        me.next_server_direction.ping_port = me.servers_directions->ping_port;
-        strcpy(me.next_server_direction.ip_address, me.servers_directions->ip_address);
+
+            printf("Hi 1\n");
+            me.next_server_direction.id_server = me.servers_directions[0].id_server;
+
+            printf("Hi 2\n");
+            me.next_server_direction.passive_port = me.servers_directions[0].passive_port;
+
+            printf("Hi 3\n");
+            me.next_server_direction.ping_port = me.servers_directions[0].ping_port;
+
+            printf("Hi 4\n");
+            me.next_server_direction.ip_address = strdup(me.servers_directions[0].ip_address);
+            printf("** %s\n", me.next_server_direction.ip_address);
+        }
+
     }
 
     return me;

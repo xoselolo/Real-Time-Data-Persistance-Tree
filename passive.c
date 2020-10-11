@@ -27,6 +27,11 @@ void * PASSIVE_server(void * arg) {
 
         if (frame.type == 'R') {
             frame.data = TOOLS_read_until(client_fd, '\0');
+            printf("READ TRAMA received: %s\n", frame.data);
+        }
+        else{
+            frame.data = TOOLS_read_until(client_fd, '\0');
+            printf("UPDATE TRAMA received: %s\n", frame.data);
         }
 
         free(frame.data);

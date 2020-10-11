@@ -27,7 +27,6 @@ int main(int argc, char** argv) {
 
         // TODO: Create ping thread
 
-
         for(int i = 0; i < 10; i++){
             // I'm the first or the top server
             if(server.next_server_direction.id_server < 0){ // NO hem de connectar-nos amb ningú
@@ -51,19 +50,23 @@ int main(int argc, char** argv) {
                     printf("Value (UPDATE) = %d\n", server.data.value);
                 }
             }else{
+                printf("[[ %s ]]\n", server.next_server_direction.ip_address);
                 // CONNECT to (passive) next server
                 if (TOOLS_connect_server(&active_fd, server.next_server_direction.ip_address, server.next_server_direction.passive_port) == EXIT_SUCCESS){
+                    printf("CONNECTED TO id_server %d\n", server.next_server_direction.id_server);
                     if(server.is_read_only == 'R'){
+                        printf("Value (GET) = %d\n", server.data.value);
                         // TODO: GET value (trama)
                     }else{
                         // TODO: UPDATE value (trama)
+                        printf("Value (UPDATE) malo = %d\n", server.data.value);
                     }
                 }else{
                     break;
                 }
             }
 
-            printf("---- Sleep %d\n", i);
+            //printf("---- Sleep %d\n", i);
             sleep(server.sleep_time);
 
         }
