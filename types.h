@@ -41,7 +41,9 @@ typedef struct {
 
 typedef struct{
     Direction my_direction; // Config
-    int id_server_next; // to make a petition or resend it
+
+    Direction next_server_direction; // to make a petition or resend it
+
     char is_read_only;
     int sleep_time;
 
