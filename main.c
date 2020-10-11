@@ -1,6 +1,6 @@
-#include "types.h"
-#include "passive.h"
 #include "config.h"
+#include "passive.h"
+#include "types.h"
 
 Server server;
 
@@ -73,5 +73,12 @@ int main(int argc, char** argv) {
     }
 
 
+    int fd_client;
+    //TOOLS_connect_server(&fd_client, "127.0.0.1", 8840);
+
+    while (1) {
+        pause();
+    }
+    
     return 0;
 }
