@@ -6,6 +6,7 @@
 #include <stdlib.h>
 
 typedef struct Node{
+    int id_server;
     int id_transaction;
     struct Node* smaller;
     struct Node* bigger;
@@ -34,7 +35,7 @@ int TRANSACTION_BINARY_TREE_exists(Node* node, int id_transaction);
  * @param node : actual node being explored
  * @param id_transaction : value to search
  */
-void TRANSACTION_BINARY_TREE_add(Node** node, int id_transaction);
+void TRANSACTION_BINARY_TREE_add(Node** node, int id_transaction, int id_server);
 
 /**
  * TRANSACTION_BINARY_TREE_add

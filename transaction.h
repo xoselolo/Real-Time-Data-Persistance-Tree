@@ -2,9 +2,9 @@
 #ifndef TRANSACTIONS_BINARY_TREE_TRANSACTION_H
 #define TRANSACTIONS_BINARY_TREE_TRANSACTION_H
 
-int TRANSACTION_generateId();
+#include "types.h"
 
-char initialized = 0;
+int TRANSACTION_generateId(Node* root);
 
 
 #endif //TRANSACTIONS_BINARY_TREE_TRANSACTION_H
