@@ -88,3 +88,74 @@ char* TOOLS_read_until(int fd, char end) {
     string[i - 1] = '\0';
     return string;
 }
+
+/**
+ * [ R id_server # id_trans ]
+ */
+int TOOLS_sendReadPetitionTrama(int fd, int id_server, int id_trans){
+    int n;
+
+    n = write(fd, "R", sizeof(char));
+    if(n <= 0){
+        return -1;
+    }
+    n = write(fd, &id_server, sizeof(int));
+    if(n <= 0){
+        return -1;
+    }
+    n = write(fd, "#", sizeof(char));
+    if(n <= 0){
+        return -1;
+    }
+    n = write(fd, &id_trans, sizeof(int));
+    if(n <= 0){
+        return -1;
+    }
+    n = write(fd, "#", sizeof(char));
+    if(n <= 0){
+        return -1;
+    }
+    return EXIT_SUCCESS;
+}
+
+int TOOLS_sendReadResponseTrama(int fd, int id_server, int id_trans, int version, int value){
+    int n;
+
+    n = write(fd, "R", sizeof(char));
+    if(n <= 0){
+        return -1;
+    }
+    n = write(fd, &id_server, sizeof(int));
+    if(n <= 0){
+        return -1;
+    }
+    n = write(fd, "#", sizeof(char));
+    if(n <= 0){
+        return -1;
+    }
+    n = write(fd, &id_trans, sizeof(int));
+    if(n <= 0){
+        return -1;
+    }
+    n = write(fd, "#", sizeof(char));
+    if(n <= 0){
+        return -1;
+    }
+    n = write(fd, &version, sizeof(int));
+    if(n <= 0){
+        return -1;
+    }
+    n = write(fd, "#", sizeof(char));
+    if(n <= 0){
+        return -1;
+    }
+    n = write(fd, &value, sizeof(int));
+    if(n <= 0){
+        return -1;
+    }
+    n = write(fd, "#", sizeof(char));
+    if(n <= 0){
+        return -1;
+    }
+    return EXIT_SUCCESS;
+}
