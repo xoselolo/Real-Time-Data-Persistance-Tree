@@ -3,6 +3,8 @@
 
 #include "types.h"
 #include "tools.h"
+#include "frame.h"
+#include "transaction.h"
 
 void * PASSIVE_server(void * arg);
 

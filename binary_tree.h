@@ -3,14 +3,7 @@
 #ifndef TRANSACTIONS_BINARY_TREE_BINARY_TREE_H
 #define TRANSACTIONS_BINARY_TREE_BINARY_TREE_H
 
-#include <stdlib.h>
-
-typedef struct Node{
-    int id_server;
-    int id_transaction;
-    struct Node* smaller;
-    struct Node* bigger;
-}Node;
+#include "types.h"
 
 /**
  * TRANSACTION_BINARY_TREE_exists
