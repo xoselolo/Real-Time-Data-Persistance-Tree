@@ -58,9 +58,11 @@ int main(int argc, char** argv) {
                     if(server.is_read_only == 'R'){
                         printf("Value (GET) = %d\n", server.data.value);
                         int id_transaction = TRANSACTION_generateId(server.transaction_trees[0]);
-                        TOOLS_sendReadPetitionTrama(active_fd, server.my_direction.id_server, id_transaction);
+                        FRAME_sendReadRequest(active_fd, server.my_direction.id_server, id_transaction);
                         TRANSACTION_BINARY_TREE_add(&(server.transaction_trees[0]), id_transaction, server.my_direction.id_server);
                         printf("Server %d transaction %d added!\n", server.my_direction.id_server, id_transaction);
+                        // wait for response
+                        FRAME_readReadResponse(active_fd, &(server.data.version), &(server.data.value));
                     }else{
                         // TODO: UPDATE value (trama)
                         printf("Value (UPDATE) malo = %d\n", server.data.value);
