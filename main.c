@@ -56,13 +56,17 @@ int main(int argc, char** argv) {
                 if (TOOLS_connect_server(&active_fd, server.next_server_direction.ip_address, server.next_server_direction.passive_port) == EXIT_SUCCESS){
                     printf("--------- CONNECTED TO id_server %d\n", server.next_server_direction.id_server);
                     if(server.is_read_only == 'R'){
-                        printf("Value (GET) = %d\n", server.data.value);
                         int id_transaction = TRANSACTION_generateId(server.transaction_trees[0]);
-                        FRAME_sendReadRequest(active_fd, server.my_direction.id_server, id_transaction);
+                        if(FRAME_sendReadRequest(active_fd, server.my_direction.id_server, id_transaction) == EXIT_SUCCESS){
+                            printf("aaa");
+                        }
                         TRANSACTION_BINARY_TREE_add(&(server.transaction_trees[0]), id_transaction, server.my_direction.id_server);
                         printf("Server %d transaction %d added!\n", server.my_direction.id_server, id_transaction);
-                        // wait for response
-                        FRAME_readReadResponse(active_fd, &(server.data.version), &(server.data.value));
+                        // active wait for response
+                        if(FRAME_readReadResponse(active_fd, &(server.data.version), &(server.data.value)) == EXIT_SUCCESS){
+                            printf("hola");
+                        }
+                        printf("Value (GET) = %d\nv_%d\n\n", server.data.value, server.data.version);
                     }else{
                         // TODO: UPDATE value (trama)
                         printf("Value (UPDATE) malo = %d\n", server.data.value);

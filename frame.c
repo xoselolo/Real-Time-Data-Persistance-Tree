@@ -13,11 +13,11 @@ int FRAME_readReadRequest(int fd, int * id_server, int * id_trans) {
 } 
 
 int FRAME_readReadResponse(int fd, int * version, int * value) {
-    if (read(fd, &version, sizeof(int)) != sizeof(int)) {
+    if (read(fd, version, sizeof(int)) != sizeof(int)) {
         return EXIT_FAILURE;
     }
     
-    if (read(fd, &value, sizeof(int)) != sizeof(int)) {
+    if (read(fd, value, sizeof(int)) != sizeof(int)) {
         return EXIT_FAILURE;
     }
 
@@ -25,6 +25,8 @@ int FRAME_readReadResponse(int fd, int * version, int * value) {
 } 
 
 int FRAME_sendReadResponse(int fd, int version, int value) {
+    write(1, "Sending...\n", strlen("Sending...\n") * sizeof(char));
+
     if (write(fd, &version, sizeof(int)) != sizeof(int)) {
         return EXIT_FAILURE;
     }
@@ -32,7 +34,7 @@ int FRAME_sendReadResponse(int fd, int version, int value) {
     if (write(fd, &value, sizeof(int)) != sizeof(int)) {
         return EXIT_FAILURE;
     }
-    
+
     return EXIT_SUCCESS;
 } 
 

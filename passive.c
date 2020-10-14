@@ -28,7 +28,8 @@ void * PASSIVE_server(void * arg) {
 
         if (frame.type == READ) {
             FRAME_readReadRequest(client_fd, &id_server, &id_trans);
-            TRANSACTION_readPassive(server, client_fd, id_server, id_trans);
+            FRAME_sendReadResponse(client_fd, server->data.version, server->data.value); // TESTING: m'esta enviant 0,0 ?¿?¿?¿?¿
+            // todo: discomment --> TRANSACTION_readPassive(server, client_fd, id_server, id_trans);
         }
 
         free(frame.data);
