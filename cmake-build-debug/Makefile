@@ -176,6 +176,33 @@ config.c.s:
 	$(MAKE) -f CMakeFiles\transactions_binary_tree.dir\build.make CMakeFiles/transactions_binary_tree.dir/config.c.s
 .PHONY : config.c.s
 
+frame.obj: frame.c.obj
+
+.PHONY : frame.obj
+
+# target to build an object file
+frame.c.obj:
+	$(MAKE) -f CMakeFiles\transactions_binary_tree.dir\build.make CMakeFiles/transactions_binary_tree.dir/frame.c.obj
+.PHONY : frame.c.obj
+
+frame.i: frame.c.i
+
+.PHONY : frame.i
+
+# target to preprocess a source file
+frame.c.i:
+	$(MAKE) -f CMakeFiles\transactions_binary_tree.dir\build.make CMakeFiles/transactions_binary_tree.dir/frame.c.i
+.PHONY : frame.c.i
+
+frame.s: frame.c.s
+
+.PHONY : frame.s
+
+# target to generate assembly for a file
+frame.c.s:
+	$(MAKE) -f CMakeFiles\transactions_binary_tree.dir\build.make CMakeFiles/transactions_binary_tree.dir/frame.c.s
+.PHONY : frame.c.s
+
 main.obj: main.c.obj
 
 .PHONY : main.obj
@@ -202,6 +229,33 @@ main.s: main.c.s
 main.c.s:
 	$(MAKE) -f CMakeFiles\transactions_binary_tree.dir\build.make CMakeFiles/transactions_binary_tree.dir/main.c.s
 .PHONY : main.c.s
+
+passive.obj: passive.c.obj
+
+.PHONY : passive.obj
+
+# target to build an object file
+passive.c.obj:
+	$(MAKE) -f CMakeFiles\transactions_binary_tree.dir\build.make CMakeFiles/transactions_binary_tree.dir/passive.c.obj
+.PHONY : passive.c.obj
+
+passive.i: passive.c.i
+
+.PHONY : passive.i
+
+# target to preprocess a source file
+passive.c.i:
+	$(MAKE) -f CMakeFiles\transactions_binary_tree.dir\build.make CMakeFiles/transactions_binary_tree.dir/passive.c.i
+.PHONY : passive.c.i
+
+passive.s: passive.c.s
+
+.PHONY : passive.s
+
+# target to generate assembly for a file
+passive.c.s:
+	$(MAKE) -f CMakeFiles\transactions_binary_tree.dir\build.make CMakeFiles/transactions_binary_tree.dir/passive.c.s
+.PHONY : passive.c.s
 
 tools.obj: tools.c.obj
 
@@ -272,9 +326,15 @@ help:
 	@echo ... config.obj
 	@echo ... config.i
 	@echo ... config.s
+	@echo ... frame.obj
+	@echo ... frame.i
+	@echo ... frame.s
 	@echo ... main.obj
 	@echo ... main.i
 	@echo ... main.s
+	@echo ... passive.obj
+	@echo ... passive.i
+	@echo ... passive.s
 	@echo ... tools.obj
 	@echo ... tools.i
 	@echo ... tools.s

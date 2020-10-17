@@ -5,8 +5,10 @@
 #include "tools.h"
 
 #define READ 'R'
+#define ACK 'A'
+#define UPDATE 'U'
 #define READ_STR "R"
-#define ACK "ACK\0"
+#define ACK_STR "A"
 
 #define ERR_ACK 2
 #define ERR_SRVR_NOT_FOUND 3
@@ -18,5 +20,10 @@ int FRAME_readReadResponse(int fd, int * version, int * value);
 int FRAME_sendReadResponse(int fd, int version, int value);
 int FRAME_readReadAck(int fd);
 int FRAME_sendReadAck(int fd);
+
+int FRAME_sendUpdateRequest(int active_fd, int id_server, int id_transaction, Operation operation);
+int FRAME_readUpdateRequest(int fd, int * id_server, int * id_trans, Operation* operation);
+int FRAME_sendUpdateResponse(int fd, int version, int value);
+int FRAME_readUpdateResponse(int fd, int * version, int * value);
 
 #endif //FRAME_H

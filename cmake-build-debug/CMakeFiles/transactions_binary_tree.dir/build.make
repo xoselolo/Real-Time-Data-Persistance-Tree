@@ -69,9 +69,35 @@ CMakeFiles/transactions_binary_tree.dir/main.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/transactions_binary_tree.dir/main.c.s"
 	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Users\Usuario\CLionProjects\distribuida_projects\transactions_binary_tree\main.c -o CMakeFiles\transactions_binary_tree.dir\main.c.s
 
+CMakeFiles/transactions_binary_tree.dir/passive.c.obj: CMakeFiles/transactions_binary_tree.dir/flags.make
+CMakeFiles/transactions_binary_tree.dir/passive.c.obj: ../passive.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\Usuario\CLionProjects\distribuida_projects\transactions_binary_tree\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/transactions_binary_tree.dir/passive.c.obj"
+	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles\transactions_binary_tree.dir\passive.c.obj   -c C:\Users\Usuario\CLionProjects\distribuida_projects\transactions_binary_tree\passive.c
+
+CMakeFiles/transactions_binary_tree.dir/passive.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/transactions_binary_tree.dir/passive.c.i"
+	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Users\Usuario\CLionProjects\distribuida_projects\transactions_binary_tree\passive.c > CMakeFiles\transactions_binary_tree.dir\passive.c.i
+
+CMakeFiles/transactions_binary_tree.dir/passive.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/transactions_binary_tree.dir/passive.c.s"
+	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Users\Usuario\CLionProjects\distribuida_projects\transactions_binary_tree\passive.c -o CMakeFiles\transactions_binary_tree.dir\passive.c.s
+
+CMakeFiles/transactions_binary_tree.dir/frame.c.obj: CMakeFiles/transactions_binary_tree.dir/flags.make
+CMakeFiles/transactions_binary_tree.dir/frame.c.obj: ../frame.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\Usuario\CLionProjects\distribuida_projects\transactions_binary_tree\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/transactions_binary_tree.dir/frame.c.obj"
+	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles\transactions_binary_tree.dir\frame.c.obj   -c C:\Users\Usuario\CLionProjects\distribuida_projects\transactions_binary_tree\frame.c
+
+CMakeFiles/transactions_binary_tree.dir/frame.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/transactions_binary_tree.dir/frame.c.i"
+	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Users\Usuario\CLionProjects\distribuida_projects\transactions_binary_tree\frame.c > CMakeFiles\transactions_binary_tree.dir\frame.c.i
+
+CMakeFiles/transactions_binary_tree.dir/frame.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/transactions_binary_tree.dir/frame.c.s"
+	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Users\Usuario\CLionProjects\distribuida_projects\transactions_binary_tree\frame.c -o CMakeFiles\transactions_binary_tree.dir\frame.c.s
+
 CMakeFiles/transactions_binary_tree.dir/binary_tree.c.obj: CMakeFiles/transactions_binary_tree.dir/flags.make
 CMakeFiles/transactions_binary_tree.dir/binary_tree.c.obj: ../binary_tree.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\Usuario\CLionProjects\distribuida_projects\transactions_binary_tree\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/transactions_binary_tree.dir/binary_tree.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\Usuario\CLionProjects\distribuida_projects\transactions_binary_tree\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object CMakeFiles/transactions_binary_tree.dir/binary_tree.c.obj"
 	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles\transactions_binary_tree.dir\binary_tree.c.obj   -c C:\Users\Usuario\CLionProjects\distribuida_projects\transactions_binary_tree\binary_tree.c
 
 CMakeFiles/transactions_binary_tree.dir/binary_tree.c.i: cmake_force
@@ -84,7 +110,7 @@ CMakeFiles/transactions_binary_tree.dir/binary_tree.c.s: cmake_force
 
 CMakeFiles/transactions_binary_tree.dir/transaction.c.obj: CMakeFiles/transactions_binary_tree.dir/flags.make
 CMakeFiles/transactions_binary_tree.dir/transaction.c.obj: ../transaction.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\Usuario\CLionProjects\distribuida_projects\transactions_binary_tree\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/transactions_binary_tree.dir/transaction.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\Usuario\CLionProjects\distribuida_projects\transactions_binary_tree\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object CMakeFiles/transactions_binary_tree.dir/transaction.c.obj"
 	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles\transactions_binary_tree.dir\transaction.c.obj   -c C:\Users\Usuario\CLionProjects\distribuida_projects\transactions_binary_tree\transaction.c
 
 CMakeFiles/transactions_binary_tree.dir/transaction.c.i: cmake_force
@@ -97,7 +123,7 @@ CMakeFiles/transactions_binary_tree.dir/transaction.c.s: cmake_force
 
 CMakeFiles/transactions_binary_tree.dir/config.c.obj: CMakeFiles/transactions_binary_tree.dir/flags.make
 CMakeFiles/transactions_binary_tree.dir/config.c.obj: ../config.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\Usuario\CLionProjects\distribuida_projects\transactions_binary_tree\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object CMakeFiles/transactions_binary_tree.dir/config.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\Usuario\CLionProjects\distribuida_projects\transactions_binary_tree\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building C object CMakeFiles/transactions_binary_tree.dir/config.c.obj"
 	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles\transactions_binary_tree.dir\config.c.obj   -c C:\Users\Usuario\CLionProjects\distribuida_projects\transactions_binary_tree\config.c
 
 CMakeFiles/transactions_binary_tree.dir/config.c.i: cmake_force
@@ -110,7 +136,7 @@ CMakeFiles/transactions_binary_tree.dir/config.c.s: cmake_force
 
 CMakeFiles/transactions_binary_tree.dir/tools.c.obj: CMakeFiles/transactions_binary_tree.dir/flags.make
 CMakeFiles/transactions_binary_tree.dir/tools.c.obj: ../tools.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\Usuario\CLionProjects\distribuida_projects\transactions_binary_tree\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object CMakeFiles/transactions_binary_tree.dir/tools.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\Usuario\CLionProjects\distribuida_projects\transactions_binary_tree\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building C object CMakeFiles/transactions_binary_tree.dir/tools.c.obj"
 	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles\transactions_binary_tree.dir\tools.c.obj   -c C:\Users\Usuario\CLionProjects\distribuida_projects\transactions_binary_tree\tools.c
 
 CMakeFiles/transactions_binary_tree.dir/tools.c.i: cmake_force
@@ -124,6 +150,8 @@ CMakeFiles/transactions_binary_tree.dir/tools.c.s: cmake_force
 # Object files for target transactions_binary_tree
 transactions_binary_tree_OBJECTS = \
 "CMakeFiles/transactions_binary_tree.dir/main.c.obj" \
+"CMakeFiles/transactions_binary_tree.dir/passive.c.obj" \
+"CMakeFiles/transactions_binary_tree.dir/frame.c.obj" \
 "CMakeFiles/transactions_binary_tree.dir/binary_tree.c.obj" \
 "CMakeFiles/transactions_binary_tree.dir/transaction.c.obj" \
 "CMakeFiles/transactions_binary_tree.dir/config.c.obj" \
@@ -133,6 +161,8 @@ transactions_binary_tree_OBJECTS = \
 transactions_binary_tree_EXTERNAL_OBJECTS =
 
 transactions_binary_tree.exe: CMakeFiles/transactions_binary_tree.dir/main.c.obj
+transactions_binary_tree.exe: CMakeFiles/transactions_binary_tree.dir/passive.c.obj
+transactions_binary_tree.exe: CMakeFiles/transactions_binary_tree.dir/frame.c.obj
 transactions_binary_tree.exe: CMakeFiles/transactions_binary_tree.dir/binary_tree.c.obj
 transactions_binary_tree.exe: CMakeFiles/transactions_binary_tree.dir/transaction.c.obj
 transactions_binary_tree.exe: CMakeFiles/transactions_binary_tree.dir/config.c.obj
@@ -141,7 +171,7 @@ transactions_binary_tree.exe: CMakeFiles/transactions_binary_tree.dir/build.make
 transactions_binary_tree.exe: CMakeFiles/transactions_binary_tree.dir/linklibs.rsp
 transactions_binary_tree.exe: CMakeFiles/transactions_binary_tree.dir/objects1.rsp
 transactions_binary_tree.exe: CMakeFiles/transactions_binary_tree.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=C:\Users\Usuario\CLionProjects\distribuida_projects\transactions_binary_tree\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking C executable transactions_binary_tree.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=C:\Users\Usuario\CLionProjects\distribuida_projects\transactions_binary_tree\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking C executable transactions_binary_tree.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\transactions_binary_tree.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
