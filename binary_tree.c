@@ -18,25 +18,27 @@ int TRANSACTION_BINARY_TREE_exists(Node* node, int id_transaction){
 }
 
 
-void TRANSACTION_BINARY_TREE_add(Node** node, int id_transaction){
+void TRANSACTION_BINARY_TREE_add(Node** node, int id_transaction, int id_server){
 
     if(*node == NULL){
         *node = (Node*)malloc(sizeof(Node));
         (*node)->id_transaction = id_transaction;
+        (*node)->id_server = id_server;
         (*node)->smaller = NULL;
         (*node)->bigger = NULL;
     }else{
         if((*node)->id_transaction == -1){
             // is root (empty)
             (*node)->id_transaction = id_transaction;
+            (*node)->id_server = id_server;
         }else{
             // If the number exists, we don't add it again
             if(id_transaction < (*node)->id_transaction){
                 // Explore the smaller son
-                TRANSACTION_BINARY_TREE_add(&((*node)->smaller), id_transaction);
+                TRANSACTION_BINARY_TREE_add(&((*node)->smaller), id_transaction, id_server);
             }else if(id_transaction > (*node)->id_transaction){
                 // Explore the bigger son
-                TRANSACTION_BINARY_TREE_add(&((*node)->bigger), id_transaction);
+                TRANSACTION_BINARY_TREE_add(&((*node)->bigger), id_transaction, id_server);
             }
         }
     }

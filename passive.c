@@ -9,6 +9,7 @@ void * PASSIVE_server(void * arg) {
     struct sockaddr_in s_addr;
     socklen_t len = sizeof(s_addr);
     Frame frame;
+    Operation operation;
 
     int id_server, id_trans;
 
@@ -16,6 +17,7 @@ void * PASSIVE_server(void * arg) {
     write(1, "socket opened\n", strlen("socket opened\n"));
 
     while (1) {
+
         client_fd = accept(server_fd, (void *) &s_addr, &len);
         write(1, "client accepted\n", strlen("client accepted\n"));
         memset(&frame, 0, sizeof(Frame));
@@ -26,9 +28,45 @@ void * PASSIVE_server(void * arg) {
             perror(ERR_CONN);
         }
 
-        if (frame.type == READ) {
-            FRAME_readReadRequest(client_fd, &id_server, &id_trans);
-            TRANSACTION_readPassive(server, client_fd, id_server, id_trans);
+        switch (frame.type) {
+            case READ:
+                FRAME_readReadRequest(client_fd, &id_server, &id_trans);
+                FRAME_sendReadResponse(client_fd, server->data.version, server->data.value); // TESTING: m'esta enviant 0,0 ?¿?¿?¿?¿
+                // todo --> TRANSACTION_readPassive(server, client_fd, id_server, id_trans);
+                break;
+
+            case UPDATE:
+                printf("---- update received ----\n");
+                FRAME_readUpdateRequest(client_fd, &id_server, &id_trans, &operation);
+                //printf("Pre (%c): %d \n", operation.operator, server->data.value);
+                switch (operation.operator) {
+                    case '+':
+                        printf("suma\n");
+                        server->data.value += operation.operand;
+                        break;
+                    case '-':
+                        printf("resta\n");
+                        server->data.value -= operation.operand;
+                        break;
+                    case '*':
+                        printf("product\n");
+                        server->data.value *= operation.operand;
+                        break;
+                    case '/':
+                        printf("division\n");
+                        server->data.value /= operation.operand;
+                        break;
+                }
+                server->data.version++;
+                //printf("Post: %d \n", server->data.value);
+                FRAME_sendUpdateResponse(client_fd, server->data.version, server->data.value);
+                // todo --> TRANSACTION_updatePassive
+
+                break;
+
+            case ACK:
+
+                break;
         }
 
         free(frame.data);

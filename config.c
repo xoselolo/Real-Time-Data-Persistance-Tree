@@ -50,9 +50,16 @@ Server readConfig(char* filename){
         me.data.value = 0;
         me.data.version = 0;
 
-        me.transaction_trees = (Node**)malloc(sizeof(Node*)); // Reservem un arbre nomes per al primer servidor on ens connectem
+        me.transaction_trees = (Node**)malloc(sizeof(Node*)); // Reservem un arbre nomes per al nostre servidor
+        // nostre server SEMPRE [0]
+        me.transaction_trees[0] = (Node*)malloc(sizeof(Node));
+        me.transaction_trees[0]->id_server = me.my_direction.id_server;
+        me.transaction_trees[0]->id_transaction = -1;
+        me.transaction_trees[0]->bigger = NULL;
+        me.transaction_trees[0]->smaller = NULL;
+        // create another tree for every connection
 
-        me.total_servers = 1; // Probably updated when connection
+        me.total_servers = 0; // Probably updated when connection
 
         me.servers_directions = (Direction*)malloc(sizeof(Direction)); // Nomes per al primer servidor (al que es connecta inicialment)
 
@@ -77,22 +84,25 @@ Server readConfig(char* filename){
             printf("\t\tPing port: %d\n", atoi(aux));
             me.servers_directions[0].ping_port = atoi(aux);
 
-
-            printf("Hi 1\n");
             me.next_server_direction.id_server = me.servers_directions[0].id_server;
-
-            printf("Hi 2\n");
             me.next_server_direction.passive_port = me.servers_directions[0].passive_port;
-
-            printf("Hi 3\n");
             me.next_server_direction.ping_port = me.servers_directions[0].ping_port;
-
-            printf("Hi 4\n");
             me.next_server_direction.ip_address = strdup(me.servers_directions[0].ip_address);
-            printf("** %s\n", me.next_server_direction.ip_address);
+
+            me.total_servers++;
+
+            me.transaction_trees = (Node**)realloc(me.transaction_trees, sizeof(Node*) * 2);
+            me.transaction_trees[1] = (Node*)malloc(sizeof(Node));
+            me.transaction_trees[1]->id_server = me.next_server_direction.id_server;
+            me.transaction_trees[1]->id_transaction = -1;
+            me.transaction_trees[1]->bigger = NULL;
+            me.transaction_trees[1]->smaller = NULL;
+
         }
 
     }
+
+    printf("\n\n\n");
 
     return me;
 }

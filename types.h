@@ -50,6 +50,7 @@ typedef struct {
 } Direction;
 
 typedef struct Node{
+    int id_server;
     int id_transaction;
     struct Node* smaller;
     struct Node* bigger;
