@@ -54,10 +54,6 @@ int FRAME_sendReadRequest(int fd, int id_server, int id_trans) {
     if(n <= 0){
         return -1;
     }
-    n = write(fd, "#", sizeof(char));
-    if(n <= 0){
-        return -1;
-    }
     n = write(fd, &id_trans, sizeof(int));
     if(n <= 0){
         return -1;

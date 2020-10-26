@@ -59,3 +59,4 @@ int TRANSACTION_readPassive(Server *server, int fd_client, int id_server, int id
 
     return EXIT_SUCCESS;
 }
+

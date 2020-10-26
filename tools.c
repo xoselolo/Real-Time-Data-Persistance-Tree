@@ -105,3 +105,20 @@ Direction TOOLS_findDirection(Direction * directions, int n_directions, int id_s
     }
     return dir;
 }
+
+int TOOLS_displayMenu() {
+    int option;
+    char *buffer;
+
+    write(1, MENU, strlen(MENU));
+    buffer = TOOLS_read_until(1, '\n');
+    option = atoi(buffer);
+    free(buffer);
+
+    if (option < 1 || option > 2) {
+        perror(INVALID_OPTION);
+        return -1;
+    }
+
+    return option;
+}

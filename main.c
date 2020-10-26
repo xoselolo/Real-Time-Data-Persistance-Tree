@@ -27,7 +27,18 @@ int main(int argc, char** argv) {
 
         // TODO: Create ping thread
 
-        for(int i = 0; i < 10; i++){
+
+        while(1) {
+            int option = TOOLS_displayMenu();
+            switch (option) {
+                case 1:
+                
+                    break;
+            }
+        }
+        
+
+        /*for(int i = 0; i < 10; i++){
             // I'm the first or the top server
             if(server.next_server_direction.id_server < 0){ // NO hem de connectar-nos amb ningú
                 if(server.is_read_only == 'R'){
@@ -67,7 +78,7 @@ int main(int argc, char** argv) {
             }
 
             //printf("---- Sleep %d\n", i);
-            sleep(server.sleep_time);
+            sleep(server.sleep_time);*/
 
         }
     }
