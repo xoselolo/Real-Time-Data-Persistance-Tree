@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
             size = asprintf(&buffer, BOLDRED "Unable to connect to the servers.\n" RESET);
             write(1, buffer, size);
             free(buffer);
-            exit(EXIT_FAILURE);
+            raise(SIGINT);
         }
 
         pthread_create(&t_passive, NULL, PASSIVE_server, &server);
