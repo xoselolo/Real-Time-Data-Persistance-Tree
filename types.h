@@ -1,7 +1,12 @@
 
-#ifndef TRANSACTIONS_BINARY_TREE_TYPES_H
-#define TRANSACTIONS_BINARY_TREE_TYPES_H
+#ifndef _TYPES_H
+#define _TYPES_H
 
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif //_GNU_SOURCE
+
+#include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -14,13 +19,13 @@
 #include <netdb.h>
 #include <pthread.h>
 #include <signal.h>
-#include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 
 #define BOLD    "\033[1m"
 #define BOLDGREEN "\033[1m\033[32m"
 #define BOLDRED   "\033[1m\033[31m"
+#define BOLDBLUE "\033[1m\033[34m"
 #define RESET     "\033[0m"
 
 #define ERR_ARGS    BOLDRED "Error, missing arguments." RESET " Usage: ./ex0 ./config/server_config.txt\n"
@@ -63,10 +68,12 @@ typedef struct{
 
     char is_read_only;
     int sleep_time;
+    int is_first;
 
     Data data; // Initially 0,0
     Node** transaction_trees; // Config (empty trees)
     Operation operation; // Config
+
     int total_servers; // Config + increment when added new servers
     Direction* servers_directions; // Config + new added servers {[0]->[ip,port] | [1]->[ip,port] ... [N]->[ip,port]}
 
@@ -83,4 +90,4 @@ typedef struct{
 
 
 
-#endif //TRANSACTIONS_BINARY_TREE_TYPES_H
+#endif //_TYPES_H

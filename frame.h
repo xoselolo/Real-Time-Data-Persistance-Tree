@@ -4,6 +4,7 @@
 #include "types.h"
 #include "tools.h"
 
+#define CONNECT 'C'
 #define READ 'R'
 #define ACK 'A'
 #define UPDATE 'U'
@@ -13,6 +14,14 @@
 #define ERR_ACK 2
 #define ERR_SRVR_NOT_FOUND 3
 #define ERR_ACK_MSG "Error receiving acknowledge from the server"
+
+int FRAME_sendFirstConnectionRequest(int fd, int id_server, char * ip_addr, int passive_port, int ping_port);
+int FRAME_sendConnectionRequest(int fd, int id_server, char * ip_addr, int passive_port, int ping_port);
+int FRAME_readConnectionRequest(int fd, int *id_server, char **ip_addr, int *passive_port, int *ping_port);
+int FRAME_sendFirstConnectionResponse(int fd, Server server);
+int FRAME_readFirstConnectionResponse(int fd, Server *server);
+int FRAME_sendConnectionResponse(int fd, Server server);
+int FRAME_readConnectionResponse(int fd, int *id_server, int *version, int *value);
 
 int FRAME_readReadRequest(int fd, int * id_server, int * id_trans);
 int FRAME_sendReadRequest(int fd, int id_server, int id_trans);

@@ -84,7 +84,6 @@ char* TOOLS_read_until(int fd, char end) {
         if (c != end && size > 0) {
             string = (char*)realloc(string, sizeof(char) * (i + 2));
             string[i++] = c;
-            //printf("%c", c);
         } else {
             i++;  //Pel \0
             break;
@@ -96,13 +95,19 @@ char* TOOLS_read_until(int fd, char end) {
 }
 
 Direction TOOLS_findDirection(Direction * directions, int n_directions, int id_server) {
-    int i = 0;
+    int i = 0, size;
+    char *buffer;
     Direction dir;
     dir.id_server = -1;
+
     for (i = 0; i < n_directions; i++) {
         if (directions[i].id_server == id_server)
             return directions[i];
     }
+
+    size = asprintf(&buffer, BOLDRED "Unable to find this direction.\n" RESET);
+    write(1, buffer, size);
+    free(buffer);
     return dir;
 }
 
@@ -121,4 +126,25 @@ int TOOLS_displayMenu() {
     }
 
     return option;
+}
+
+void TOOLS_printServerDirections(Server server) {
+    char *buffer;
+    int size, i;
+
+    size = asprintf(&buffer, BOLDBLUE "\nTotal servers: %d\n" RESET, server.total_servers);
+    write(1, buffer, size);
+    free(buffer);
+
+    for (i=0; i < server.total_servers; i++) {
+
+        size = asprintf(&buffer, BOLDBLUE "Server %d, Ip: %s, Passive port: %d, Ping port: %d\n" RESET, 
+                            server.servers_directions[i].id_server, 
+                            server.servers_directions[i].ip_address, 
+                            server.servers_directions[i].passive_port, 
+                            server.servers_directions[i].ping_port);
+        write(1, buffer, size);
+        free(buffer);
+    }
+
 }

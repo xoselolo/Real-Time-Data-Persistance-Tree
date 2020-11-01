@@ -82,3 +82,85 @@ int TRANSACTION_readPassive(Server *server, int fd_client, int id_server, int id
     return EXIT_SUCCESS;
 }
 
+int TRANSACTION_sendConnect(Server *server) {
+    int server_fd, i, size;
+    char * buffer;
+    int id_server, version, value;
+
+    if (!server->is_first) {
+        size = asprintf(&buffer, BOLDGREEN "\nInicialitzant connexions\n" RESET);
+        write(1, buffer, size);
+        free(buffer);
+
+        if (TOOLS_connect_server(&server_fd, 
+                            server->servers_directions[0].ip_address, 
+                            server->servers_directions[0].passive_port) == EXIT_FAILURE) return EXIT_FAILURE;
+
+        if (FRAME_sendFirstConnectionRequest(server_fd, 
+                                        server->my_direction.id_server,
+                                        server->my_direction.ip_address, 
+                                        server->my_direction.passive_port, 
+                                        server->my_direction.ping_port) == EXIT_FAILURE) return EXIT_FAILURE;
+
+        if (FRAME_readFirstConnectionResponse(server_fd, server) == EXIT_FAILURE) return EXIT_FAILURE;
+
+        for (i=1; i < server->total_servers; i++) {
+            size = asprintf(&buffer, BOLD "\nInicialitzant connexió amb el servidor %d\n" RESET, server->servers_directions[i].id_server);
+            write(1, buffer, size);
+            free(buffer);
+
+            if (TOOLS_connect_server(&server_fd, 
+                                server->servers_directions[i].ip_address, 
+                                server->servers_directions[i].passive_port) == EXIT_FAILURE) return EXIT_FAILURE;
+            
+            if (FRAME_sendConnectionRequest(server_fd, 
+                                        server->my_direction.id_server,
+                                        server->my_direction.ip_address, 
+                                        server->my_direction.passive_port, 
+                                        server->my_direction.ping_port) == EXIT_FAILURE) return EXIT_FAILURE;
+            
+            if (FRAME_readConnectionResponse(server_fd, &id_server, &version, &value) == EXIT_FAILURE) return EXIT_FAILURE;
+
+            if (version > server->data.version) {
+                server->next_server_direction = TOOLS_findDirection(server->servers_directions, server->total_servers, id_server);
+                server->data.value = value;
+                server->data.version = version;
+            }
+        }
+
+        size = asprintf(&buffer, BOLD "Connexions inicialitzades\n" RESET);
+        write(1, buffer, size);
+        free(buffer);
+        TOOLS_printServerDirections(*server);
+    }
+
+    return EXIT_SUCCESS;
+}
+
+int TRANSACTION_connectPassive(int fd_client, Server *server) {
+    char first_notFirst;
+    char *ip_addr;
+    int passive_port, ping_port, id_server;
+
+    if (read(fd_client, &first_notFirst, sizeof(char)) != sizeof(char)) return EXIT_FAILURE;
+    if ((server->is_first && first_notFirst != 'F') || (!server->is_first && first_notFirst != 'N')) return EXIT_FAILURE;
+    
+    if (FRAME_readConnectionRequest(fd_client, &id_server, &ip_addr, &passive_port, &ping_port) == EXIT_FAILURE) return EXIT_FAILURE;
+
+    server->servers_directions[server->total_servers].id_server = id_server;
+    server->servers_directions[server->total_servers].ip_address = ip_addr;
+    server->servers_directions[server->total_servers].passive_port = passive_port;
+    server->servers_directions[server->total_servers].ping_port = ping_port;
+    (server->total_servers)++;
+
+    server->servers_directions = (Direction *)realloc(server->servers_directions, sizeof(Direction)*(server->total_servers + 1));
+
+    TOOLS_printServerDirections(*server);
+
+    if (server->is_first) {
+        if (FRAME_sendFirstConnectionResponse(fd_client, *server) == EXIT_FAILURE) return EXIT_FAILURE;
+    } else {
+        if (FRAME_sendConnectionResponse(fd_client, *server) == EXIT_FAILURE) return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS;
+}

@@ -3,14 +3,32 @@
 #include "types.h"
 #include "transaction.h"
 
+extern int server_fd;
+extern int client_fd;
+
+static void sigint() {
+    if (server_fd != -1) {
+        close(server_fd);
+        server_fd = -1;
+    }
+    if (client_fd != -1) {
+        close(client_fd);
+        client_fd = -1;
+    }
+    raise(SIGKILL);
+}
+
 int main(int argc, char** argv) {
 
     Server server;
+    char *buffer;
+    int size;
 
+    signal(SIGINT, sigint);
     if (argc != 2){
         printf("---- ERROR: Config file name must be provided as argument!\n");
     }else{
-        int active_fd;
+        //int active_fd;
         pthread_t t_passive;
         //pthread_t t_ping;
 
@@ -19,25 +37,28 @@ int main(int argc, char** argv) {
 
         server = readConfig(argv[1]);
 
-        //server.my_direction.ip_address="127.0.0.1";
-        //server.my_direction.passive_port = 8840;
-
         //printf("READ\n");
         // TODO: connection protocol
+        if (TRANSACTION_sendConnect(&server) == EXIT_FAILURE) {
+            size = asprintf(&buffer, BOLDRED "Unable to connect to the servers.\n" RESET);
+            write(1, buffer, size);
+            free(buffer);
+            exit(EXIT_FAILURE);
+        }
 
         pthread_create(&t_passive, NULL, PASSIVE_server, &server);
 
         // TODO: Create ping thread
 
 
-        while(1) {
+       /* while(1) {
             int option = TOOLS_displayMenu();
             switch (option) {
                 case 1:
                 
                     break;
             }
-        }
+        }*/
         
 
         /*for(int i = 0; i < 10; i++){
@@ -114,7 +135,7 @@ int main(int argc, char** argv) {
             //printf("---- Sleep %d\n", i);
             sleep(server.sleep_time);*/
 
-        }
+        //}
     }
 
 

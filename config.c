@@ -25,6 +25,7 @@ Server readConfig(char* filename){
 
             aux = TOOLS_read_until(fdReadConfig, '\n');
             me.operation.operand = atoi(aux);
+            free(aux);
             printf("\tOperand: %d\n", me.operation.operand);
         }
 
@@ -33,18 +34,22 @@ Server readConfig(char* filename){
 
         aux = TOOLS_read_until(fdReadConfig, '\n');
         me.my_direction.active_port = atoi(aux);
+        free(aux);
         printf("\tActive Port: %d\n", me.my_direction.active_port);
 
         aux = TOOLS_read_until(fdReadConfig, '\n');
         me.my_direction.passive_port = atoi(aux);
+        free(aux);
         printf("\tPassive Port: %d\n", me.my_direction.passive_port);
 
         aux = TOOLS_read_until(fdReadConfig, '\n');
         me.my_direction.ping_port = atoi(aux);
+        free(aux);
         printf("\tPing Port: %d\n", me.my_direction.ping_port);
 
         aux = TOOLS_read_until(fdReadConfig, '\n');
         me.sleep_time = atoi(aux);
+        free(aux);
         printf("\tSleep Time: %d\n", me.sleep_time);
 
         me.data.value = 0;
@@ -68,7 +73,10 @@ Server readConfig(char* filename){
             // there is no server to connect to (we're the first)
             free(me.servers_directions);
             me.next_server_direction.id_server = -1;
+            me.is_first = 1;
+
         }else{
+            me.is_first = 0;
             // there is a server to connect to
             printf("\t\tIp address: %s\n", me.servers_directions[0].ip_address);
 
@@ -87,7 +95,10 @@ Server readConfig(char* filename){
             me.next_server_direction.id_server = me.servers_directions[0].id_server;
             me.next_server_direction.passive_port = me.servers_directions[0].passive_port;
             me.next_server_direction.ping_port = me.servers_directions[0].ping_port;
-            me.next_server_direction.ip_address = strdup(me.servers_directions[0].ip_address);
+
+            me.next_server_direction.ip_address = (char *)malloc(sizeof(char)*strlen(me.servers_directions[0].ip_address)+1);
+            me.next_server_direction.ip_address[0] = 0;
+            strcat(me.next_server_direction.ip_address, me.servers_directions[0].ip_address);
 
             me.total_servers++;
 
@@ -102,6 +113,7 @@ Server readConfig(char* filename){
 
     }
 
+    TOOLS_printServerDirections(me);
     printf("\n\n\n");
 
     return me;
