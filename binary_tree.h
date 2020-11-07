@@ -68,4 +68,14 @@ void TRANSACTION_BINARY_TREE_destroy(Node** node);
 
  */
 
+
+/**
+ * Find the index of the server in the array of trees
+ * @param trees
+ * @param id_server
+ * @param total_servers
+ * @return
+ */
+int TRANSACTION_BINARY_TREE_findRoot(Node** trees, int id_server, int total_servers);
+
 #endif //TRANSACTIONS_BINARY_TREE_BINARY_TREE_H

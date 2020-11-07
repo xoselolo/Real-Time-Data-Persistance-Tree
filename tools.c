@@ -148,3 +148,15 @@ void TOOLS_printServerDirections(Server server) {
     }
 
 }
+
+void TOOLS_copyNextServerDirection(int id_server, Direction * next, Server server){
+    for (int i = 0; i < server.total_servers; i++) {
+        if (server.servers_directions[i].id_server == id_server){
+            next->passive_port = server.servers_directions[i].passive_port;
+            next->ping_port = server.servers_directions[i].ping_port;
+            next->active_port = server.servers_directions[i].active_port;
+            next->ip_address = server.servers_directions[i].ip_address;
+            break;
+        }
+    }
+}

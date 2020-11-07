@@ -13,6 +13,7 @@ void * PASSIVE_server(void * arg) {
     socklen_t len = sizeof(s_addr);
     int type;
     Operation operation;
+    int fd_passive_to_next;
 
     int id_server, id_trans;
 
@@ -24,7 +25,7 @@ void * PASSIVE_server(void * arg) {
     free(buffer);
 
     while (1) {
-
+        fd_passive_to_next = -1;
         client_fd = accept(server_fd, (void *) &s_addr, &len);
         size = read(client_fd, &type, 1);
 
@@ -38,9 +39,33 @@ void * PASSIVE_server(void * arg) {
                 break;
 
             case READ:
+                // TODO: NEEDS TO BE TESTED
                 FRAME_readReadRequest(client_fd, &id_server, &id_trans);
-                FRAME_sendReadResponse(client_fd, server->data.version, server->data.value); // TESTING: m'esta enviant 0,0 ?¿?¿?¿?¿
-                // todo --> TRANSACTION_readPassive(server, client_fd, id_server, id_trans);
+                //Put the transaction on the tree
+                int index_tree = TRANSACTION_BINARY_TREE_findRoot(server->transaction_trees, id_server, server->total_servers);
+                if (TRANSACTION_BINARY_TREE_exists(server->transaction_trees[index_tree], id_trans) == 0){
+                    TRANSACTION_BINARY_TREE_add(&(server->transaction_trees[index_tree]), id_trans, id_server);
+                }else{
+                    perror(ERR_TRANSACTION_EXISTS);
+                }
+                // check if i'm top or not
+                if(server->is_first == 1){
+                    FRAME_sendReadResponse(client_fd, server->data.version, server->data.value);
+                }else{
+                    // connect to next and send him the read request
+                    if (TOOLS_connect_server(&fd_passive_to_next, server->next_server_direction.ip_address, server->next_server_direction.passive_port) == EXIT_SUCCESS){
+                        // le enviamos al next la request
+                        FRAME_sendReadRequest(fd_passive_to_next, id_server, id_trans);
+                        // Esperamos a que responda
+                        FRAME_readReadResponse(fd_passive_to_next, &(server->data.version), &(server->data.value));
+                        // Nos reapuntamos al mas actualizado
+                        server->next_server_direction.id_server = id_server;
+                        TOOLS_copyNextServerDirection(id_server, &(server->next_server_direction), *server);
+                        // Enviamos la respuesta al que nos ha preguntado a nosotros
+                        FRAME_sendReadResponse(client_fd, server->data.version, server->data.value);
+                    }
+                }
+
                 break;
 
             case UPDATE:

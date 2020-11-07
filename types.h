@@ -30,6 +30,7 @@
 
 #define ERR_ARGS    BOLDRED "Error, missing arguments." RESET " Usage: ./ex0 ./config/server_config.txt\n"
 #define ERR_CONN    BOLDRED "Connection to client failed" RESET
+#define ERR_TRANSACTION_EXISTS    BOLDRED "Transaction already exists. Loop in tree" RESET
 
 typedef struct{
     char operator; // + - * /

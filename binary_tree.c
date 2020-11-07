@@ -30,7 +30,7 @@ void TRANSACTION_BINARY_TREE_add(Node** node, int id_transaction, int id_server)
         if((*node)->id_transaction == -1){
             // is root (empty)
             (*node)->id_transaction = id_transaction;
-            (*node)->id_server = id_server;
+            //(*node)->id_server = id_server;
         }else{
             // If the number exists, we don't add it again
             if(id_transaction < (*node)->id_transaction){
@@ -59,4 +59,13 @@ void TRANSACTION_BINARY_TREE_destroy(Node** node){
         free(*node);
         *node = NULL;
     }
+}
+
+int TRANSACTION_BINARY_TREE_findRoot(Node** trees, int id_server, int total_servers){
+    for (int i = 0; i < total_servers; i++) {
+        if(trees[i]->id_server == id_server){
+            return i;
+        }
+    }
+    return -1;
 }

@@ -155,6 +155,13 @@ int TRANSACTION_connectPassive(int fd_client, Server *server) {
 
     server->servers_directions = (Direction *)realloc(server->servers_directions, sizeof(Direction)*(server->total_servers + 1));
 
+    server->transaction_trees = (Node **)realloc(server->transaction_trees, sizeof(Node*) * server->total_servers + 1);
+    server->transaction_trees[server->total_servers]->id_server = id_server;
+    server->transaction_trees[server->total_servers]->id_transaction = -1;
+    server->transaction_trees[server->total_servers]->smaller = NULL;
+    server->transaction_trees[server->total_servers]->bigger = NULL;
+
+
     TOOLS_printServerDirections(*server);
 
     if (server->is_first) {
