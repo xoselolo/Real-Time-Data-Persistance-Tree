@@ -70,7 +70,7 @@ int TRANSACTION_readPassive(Server *server, int fd_client, int id_server, int id
             return EXIT_FAILURE;
 
         printf("STEP 10\n");
-        if (FRAME_readReadAck(fd) != EXIT_SUCCESS)
+        if (FRAME_readAck(fd) != EXIT_SUCCESS)
             return ERR_ACK;
 
         printf("STEP 11\n");
@@ -96,7 +96,7 @@ int TRANSACTION_sendConnect(Server *server) {
                             server->servers_directions[0].ip_address, 
                             server->servers_directions[0].passive_port) == EXIT_FAILURE) return EXIT_FAILURE;
 
-        if (FRAME_sendFirstConnectionRequest(server_fd, 
+        if (FRAME_sendFirstConnectionRequest(server_fd,
                                         server->my_direction.id_server,
                                         server->my_direction.ip_address, 
                                         server->my_direction.passive_port, 
@@ -144,7 +144,7 @@ int TRANSACTION_connectPassive(int fd_client, Server *server) {
 
     if (read(fd_client, &first_notFirst, sizeof(char)) != sizeof(char)) return EXIT_FAILURE;
     if ((server->is_first && first_notFirst != 'F') || (!server->is_first && first_notFirst != 'N')) return EXIT_FAILURE;
-    
+
     if (FRAME_readConnectionRequest(fd_client, &id_server, &ip_addr, &passive_port, &ping_port) == EXIT_FAILURE) return EXIT_FAILURE;
 
     server->servers_directions[server->total_servers].id_server = id_server;
@@ -156,11 +156,11 @@ int TRANSACTION_connectPassive(int fd_client, Server *server) {
     server->servers_directions = (Direction *)realloc(server->servers_directions, sizeof(Direction)*(server->total_servers + 1));
 
     server->transaction_trees = (Node **)realloc(server->transaction_trees, sizeof(Node*) * server->total_servers + 1);
+    server->transaction_trees[server->total_servers] = (Node*) malloc(sizeof(Node));
     server->transaction_trees[server->total_servers]->id_server = id_server;
     server->transaction_trees[server->total_servers]->id_transaction = -1;
     server->transaction_trees[server->total_servers]->smaller = NULL;
     server->transaction_trees[server->total_servers]->bigger = NULL;
-
 
     TOOLS_printServerDirections(*server);
 

@@ -27,8 +27,8 @@ int FRAME_readReadRequest(int fd, int * id_server, int * id_trans);
 int FRAME_sendReadRequest(int fd, int id_server, int id_trans);
 int FRAME_readReadResponse(int fd, int * version, int * value);
 int FRAME_sendReadResponse(int fd, int version, int value);
-int FRAME_readReadAck(int fd);
-int FRAME_sendReadAck(int fd);
+int FRAME_readAck(int fd);
+int FRAME_sendAck(int fd);
 
 int FRAME_sendUpdateRequest(int active_fd, int id_server, int id_transaction, Operation operation);
 int FRAME_readUpdateRequest(int fd, int * id_server, int * id_trans, Operation* operation);

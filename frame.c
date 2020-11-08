@@ -178,7 +178,7 @@ int FRAME_sendReadRequest(int fd, int id_server, int id_trans) {
 }
 
 
-int FRAME_sendReadAck(int fd) {
+int FRAME_sendAck(int fd) {
     if (write(fd, ACK_STR, sizeof(char)) != sizeof(char)) {
         return EXIT_FAILURE;
     }
@@ -188,7 +188,7 @@ int FRAME_sendReadAck(int fd) {
     return EXIT_SUCCESS;
 }
 
-int FRAME_readReadAck(int fd) {
+int FRAME_readAck(int fd) {
     char ack[strlen(ACK_STR)];
     
     if (read(fd, ack, strlen(ACK_STR)) != strlen(ACK_STR)) {

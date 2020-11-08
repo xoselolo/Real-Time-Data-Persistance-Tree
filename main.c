@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
     if (argc != 2){
         printf("---- ERROR: Config file name must be provided as argument!\n");
     }else{
-        //int active_fd;
+        int active_fd;
         pthread_t t_passive;
         //pthread_t t_ping;
 
@@ -59,11 +59,13 @@ int main(int argc, char** argv) {
                     break;
             }
         }*/
-        
+
 
         for(int i = 0; i < 10; i++){
+            printf("\n\n\n\n");
             // I'm the first or the top server
-            if(server.next_server_direction.id_server < 0){ // NO hem de connectar-nos amb ningú
+            if(server.next_server_direction.id_server < 0 || server.is_first == 1){ // NO hem de connectar-nos amb ningú
+                printf("I'm first\n");
                 if(server.is_read_only == 'R'){
                     printf("Value (GET) v_%d  == %d\n", server.data.version, server.data.value);
                 }else{
@@ -81,13 +83,14 @@ int main(int argc, char** argv) {
                             server.data.value /= server.operation.operand;
                             break;
                     }
-                    printf("Value (UPDATE) = %d\n", server.data.value);
                     server.data.version++;
+                    printf("Value (UPDATE) v_%d  == %d\n", server.data.version, server.data.value);
+
                 }
             }else{
                 // CONNECT to (passive) next server
                 if (TOOLS_connect_server(&active_fd, server.next_server_direction.ip_address, server.next_server_direction.passive_port) == EXIT_SUCCESS){
-
+                    printf("I'm not the first\n");
                     printf("--------- CONNECTED TO id_server %d\n", server.next_server_direction.id_server);
                     if(server.is_read_only == 'R'){
 
@@ -96,15 +99,14 @@ int main(int argc, char** argv) {
                         if(FRAME_sendReadRequest(active_fd, server.my_direction.id_server, id_transaction) == EXIT_SUCCESS){
                             TRANSACTION_BINARY_TREE_add(&(server.transaction_trees[0]), id_transaction, server.my_direction.id_server);
 
-                            printf("Server %d transaction %d added!\n", server.my_direction.id_server, id_transaction);
+                            //printf("Server %d transaction %d added!\n", server.my_direction.id_server, id_transaction);
 
                             // active wait for response
                             if(FRAME_readReadResponse(active_fd, &(server.data.version), &(server.data.value)) == EXIT_SUCCESS){
                                 printf("Value (GET) = %d\nv_%d\n\n", server.data.value, server.data.version);
-
-                                FRAME_sendReadAck(active_fd);
+                                FRAME_sendAck(active_fd);
                                 //printf("I'm top!\n");
-                                // todo: --> when connection protocol made:
+                                server.is_first = 1;
                                 server.next_server_direction.id_server = -1;
                             }
                         }
@@ -115,15 +117,14 @@ int main(int argc, char** argv) {
                         if(FRAME_sendUpdateRequest(active_fd, server.my_direction.id_server, id_transaction, server.operation) == EXIT_SUCCESS){
                             TRANSACTION_BINARY_TREE_add(&(server.transaction_trees[0]), id_transaction, server.my_direction.id_server);
 
-                            printf("Server %d transaction %d added!\n", server.my_direction.id_server, id_transaction);
+                            //printf("Server %d transaction %d added!\n", server.my_direction.id_server, id_transaction);
 
                             // active wait for response
                             if(FRAME_readUpdateResponse(active_fd, &(server.data.version), &(server.data.value)) == EXIT_SUCCESS){
                                 printf("Value (UPDATE) = %d\nv_%d\n\n", server.data.value, server.data.version);
 
-                                FRAME_sendReadAck(active_fd);
-                                //printf("I'm top!\n");
-                                // todo: --> when connection protocol made:
+                                FRAME_sendAck(active_fd);
+                                server.is_first = 1;
                                 server.next_server_direction.id_server = -1;
                             }
                         }
@@ -138,6 +139,7 @@ int main(int argc, char** argv) {
             sleep(server.sleep_time);
 
         }
+
     }
 
 

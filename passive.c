@@ -39,19 +39,26 @@ void * PASSIVE_server(void * arg) {
                 break;
 
             case READ:
-                // TODO: NEEDS TO BE TESTED
                 FRAME_readReadRequest(client_fd, &id_server, &id_trans);
                 //Put the transaction on the tree
+                /* --> ToDo: Poner este cacho de código para comprobar si la transacción sigue en ciclo
                 int index_tree = TRANSACTION_BINARY_TREE_findRoot(server->transaction_trees, id_server, server->total_servers);
                 if (TRANSACTION_BINARY_TREE_exists(server->transaction_trees[index_tree], id_trans) == 0){
+                    printf("--- ADD TRANSACTION\n");
                     TRANSACTION_BINARY_TREE_add(&(server->transaction_trees[index_tree]), id_trans, id_server);
                 }else{
                     perror(ERR_TRANSACTION_EXISTS);
-                }
+                }*/
                 // check if i'm top or not
                 if(server->is_first == 1){
                     FRAME_sendReadResponse(client_fd, server->data.version, server->data.value);
+                    FRAME_readAck(client_fd);
+                    // Nos reapuntamos al mas actualizado
+                    server->next_server_direction.id_server = id_server;
+                    TOOLS_copyNextServerDirection(id_server, &(server->next_server_direction), *server);
+                    server->is_first = 0;
                 }else{
+                    printf("--- 5 NOT FIRST\n");
                     // connect to next and send him the read request
                     if (TOOLS_connect_server(&fd_passive_to_next, server->next_server_direction.ip_address, server->next_server_direction.passive_port) == EXIT_SUCCESS){
                         // le enviamos al next la request
@@ -59,6 +66,7 @@ void * PASSIVE_server(void * arg) {
                         // Esperamos a que responda
                         FRAME_readReadResponse(fd_passive_to_next, &(server->data.version), &(server->data.value));
                         // Nos reapuntamos al mas actualizado
+                        server->is_first = 0;
                         server->next_server_direction.id_server = id_server;
                         TOOLS_copyNextServerDirection(id_server, &(server->next_server_direction), *server);
                         // Enviamos la respuesta al que nos ha preguntado a nosotros
@@ -69,32 +77,59 @@ void * PASSIVE_server(void * arg) {
                 break;
 
             case UPDATE:
-                printf("---- update received ----\n");
                 FRAME_readUpdateRequest(client_fd, &id_server, &id_trans, &operation);
-                //printf("Pre (%c): %d \n", operation.operator, server->data.value);
-                switch (operation.operator) {
-                    case '+':
-                        printf("suma\n");
-                        server->data.value += operation.operand;
-                        break;
-                    case '-':
-                        printf("resta\n");
-                        server->data.value -= operation.operand;
-                        break;
-                    case '*':
-                        printf("product\n");
-                        server->data.value *= operation.operand;
-                        break;
-                    case '/':
-                        printf("division\n");
-                        server->data.value /= operation.operand;
-                        break;
+                //Put the transaction on the tree
+                /* --> ToDo: Poner este cacho de código para comprobar si la transacción sigue en ciclo
+                int index_tree = TRANSACTION_BINARY_TREE_findRoot(server->transaction_trees, id_server, server->total_servers);
+                if (TRANSACTION_BINARY_TREE_exists(server->transaction_trees[index_tree], id_trans) == 0){
+                    printf("--- ADD TRANSACTION\n");
+                    TRANSACTION_BINARY_TREE_add(&(server->transaction_trees[index_tree]), id_trans, id_server);
+                }else{
+                    perror(ERR_TRANSACTION_EXISTS);
+                }*/
+                // check if i'm top or not
+                if(server->is_first == 1){
+                    switch (operation.operator) {
+                        case '+':
+                            printf("suma\n");
+                            server->data.value += operation.operand;
+                            break;
+                        case '-':
+                            printf("resta\n");
+                            server->data.value -= operation.operand;
+                            break;
+                        case '*':
+                            printf("product\n");
+                            server->data.value *= operation.operand;
+                            break;
+                        case '/':
+                            printf("division\n");
+                            server->data.value /= operation.operand;
+                            break;
+                    }
+                    server->data.version++;
+                    FRAME_sendUpdateResponse(client_fd, server->data.version, server->data.value);
+                    FRAME_readAck(client_fd);
+                    // Nos reapuntamos al mas actualizado
+                    server->next_server_direction.id_server = id_server;
+                    TOOLS_copyNextServerDirection(id_server, &(server->next_server_direction), *server);
+                    server->is_first = 0;
+                }else{
+                    printf("--- 5 NOT FIRST\n");
+                    // connect to next and send him the read request
+                    if (TOOLS_connect_server(&fd_passive_to_next, server->next_server_direction.ip_address, server->next_server_direction.passive_port) == EXIT_SUCCESS){
+                        // le enviamos al next la request
+                        FRAME_sendUpdateRequest(fd_passive_to_next, id_server, id_trans, operation);
+                        // Esperamos a que responda
+                        FRAME_readUpdateResponse(fd_passive_to_next, &(server->data.version), &(server->data.value));
+                        // Nos reapuntamos al mas actualizado
+                        server->is_first = 0;
+                        server->next_server_direction.id_server = id_server;
+                        TOOLS_copyNextServerDirection(id_server, &(server->next_server_direction), *server);
+                        // Enviamos la respuesta al que nos ha preguntado a nosotros
+                        FRAME_sendUpdateResponse(client_fd, server->data.version, server->data.value);
+                    }
                 }
-                server->data.version++;
-                //printf("Post: %d \n", server->data.value);
-                FRAME_sendUpdateResponse(client_fd, server->data.version, server->data.value);
-                // todo --> TRANSACTION_updatePassive
-
                 break;
 
             case ACK:
