@@ -51,6 +51,7 @@ void * PASSIVE_server(void * arg) {
                 }*/
                 // check if i'm top or not
                 if(server->is_first == 1){
+                    printf("passive FIRST\n");
                     FRAME_sendReadResponse(client_fd, server->data.version, server->data.value);
                     FRAME_readAck(client_fd);
                     // Nos reapuntamos al mas actualizado
@@ -58,7 +59,7 @@ void * PASSIVE_server(void * arg) {
                     TOOLS_copyNextServerDirection(id_server, &(server->next_server_direction), *server);
                     server->is_first = 0;
                 }else{
-                    printf("--- 5 NOT FIRST\n");
+                    printf("passive NOT FIRST\n");
                     // connect to next and send him the read request
                     if (TOOLS_connect_server(&fd_passive_to_next, server->next_server_direction.ip_address, server->next_server_direction.passive_port) == EXIT_SUCCESS){
                         // le enviamos al next la request
