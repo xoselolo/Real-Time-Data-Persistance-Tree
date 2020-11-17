@@ -32,7 +32,7 @@ void * PASSIVE_server(void * arg) {
         if (size != 1) {
             perror(ERR_CONN);
         }
-
+        
         switch (type) {
             case CONNECT:
                 return_val = TRANSACTION_connectPassive(client_fd, server);
@@ -50,29 +50,11 @@ void * PASSIVE_server(void * arg) {
                     perror(ERR_TRANSACTION_EXISTS);
                 }*/
                 // check if i'm top or not
-                if(server->is_first == 1){
-                    printf("passive FIRST\n");
-                    FRAME_sendReadResponse(client_fd, server->data.version, server->data.value);
-                    FRAME_readAck(client_fd);
-                    // Nos reapuntamos al mas actualizado
-                    server->next_server_direction.id_server = id_server;
-                    TOOLS_copyNextServerDirection(id_server, &(server->next_server_direction), *server);
-                    server->is_first = 0;
-                }else{
-                    printf("passive NOT FIRST\n");
-                    // connect to next and send him the read request
-                    if (TOOLS_connect_server(&fd_passive_to_next, server->next_server_direction.ip_address, server->next_server_direction.passive_port) == EXIT_SUCCESS){
-                        // le enviamos al next la request
-                        FRAME_sendReadRequest(fd_passive_to_next, id_server, id_trans);
-                        // Esperamos a que responda
-                        FRAME_readReadResponse(fd_passive_to_next, &(server->data.version), &(server->data.value));
-                        // Nos reapuntamos al mas actualizado
-                        server->is_first = 0;
-                        server->next_server_direction.id_server = id_server;
-                        TOOLS_copyNextServerDirection(id_server, &(server->next_server_direction), *server);
-                        // Enviamos la respuesta al que nos ha preguntado a nosotros
-                        FRAME_sendReadResponse(client_fd, server->data.version, server->data.value);
-                    }
+                if(server->next_server_direction.id_server == -1){
+                    return_val = TRANSACTION_replyReadLastUpdated(client_fd, id_server, server);
+
+                } else {
+                    return_val = TRANSACTION_replyReadCommon(client_fd, id_server, id_trans, server);
                 }
 
                 break;
@@ -133,6 +115,10 @@ void * PASSIVE_server(void * arg) {
                 }
                 break;
 
+            case READ_RESPONSE:
+                return_val = TRANSACTION_readResponsePassive(client_fd, server);
+                break;
+
             case ACK:
 
                 break;
@@ -140,7 +126,9 @@ void * PASSIVE_server(void * arg) {
 
         switch (return_val) {
         case EXIT_FAILURE:
-            /* code */
+            size = asprintf(&buffer, BOLDRED "Error on transaction of type %c\n" RESET, type);
+            write(1, buffer, size);
+            free(buffer);
             break;
         
         default:

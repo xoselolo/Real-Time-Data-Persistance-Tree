@@ -1,8 +1,7 @@
 
 #include "transaction.h"
-#include <time.h>
-#include <stdlib.h>
 
+extern semaphore sem_read_response;
 char initialized = 0;
 
 /**
@@ -169,5 +168,93 @@ int TRANSACTION_connectPassive(int fd_client, Server *server) {
     } else {
         if (FRAME_sendConnectionResponse(fd_client, *server) == EXIT_FAILURE) return EXIT_FAILURE;
     }
+    return EXIT_SUCCESS;
+}
+
+int TRANSACTION_readActive(Server server) {
+    int active_fd, version, value, size;
+    char *buffer;
+
+    if (TOOLS_connect_server(&active_fd, server.next_server_direction.ip_address, server.next_server_direction.passive_port) == EXIT_FAILURE) {
+        close(active_fd);
+        return EXIT_FAILURE;
+    }
+
+    int id_transaction = TRANSACTION_generateId(server.transaction_trees[0]);
+    if(FRAME_sendReadRequest(active_fd, server.my_direction.id_server, id_transaction) == EXIT_FAILURE) {
+        close(active_fd);
+        return EXIT_FAILURE;
+    }
+
+    size = asprintf(&buffer, BOLDYELLOW "Read request sent to server %d, %s:%d\n\n" RESET, server.next_server_direction.id_server, server.next_server_direction.ip_address, server.next_server_direction.passive_port);
+    write(1, buffer, size);
+    free(buffer);
+
+    TRANSACTION_BINARY_TREE_add(&(server.transaction_trees[0]), id_transaction, server.my_direction.id_server);
+
+    // wait for response
+    SEM_init(&sem_read_response, 0);
+    SEM_wait(&sem_read_response);
+    
+    if(FRAME_readReadResponse(active_fd, &version, &value) == EXIT_FAILURE) {
+        close(active_fd);
+        return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS;
+}
+
+int TRANSACTION_readResponsePassive(int fd_client, Server *server) {
+    int size;
+    char *buffer;
+
+    if(FRAME_readOriginReadResponse(fd_client, &(server->data.version), &(server->data.value)) == EXIT_FAILURE) return EXIT_FAILURE;
+    FRAME_sendAck(fd_client);
+    server->next_server_direction.id_server = -1;
+    size = asprintf(&buffer, BOLDGREEN "Response received %d v_%d\n\n" RESET, server->data.version, server->data.value);
+    write(1, buffer, size);
+    free(buffer);
+    SEM_signal(&sem_read_response);
+    return EXIT_SUCCESS;
+}
+
+int TRANSACTION_replyReadLastUpdated(int client_fd, int id_server, Server *server) {
+    Direction origin = TOOLS_findDirection(server->servers_directions, server->total_servers, id_server);
+    int origin_fd, size;
+    char *buffer;
+
+    if (TOOLS_connect_server(&origin_fd, 
+                            origin.ip_address, 
+                            origin.passive_port) == EXIT_FAILURE) return EXIT_FAILURE;
+    if (FRAME_sendOriginReadResponse(origin_fd, server->data.version, server->data.value) == EXIT_FAILURE) return EXIT_FAILURE;
+    if (FRAME_readAck(origin_fd) == EXIT_FAILURE) return EXIT_FAILURE;
+
+    size = asprintf(&buffer, BOLDGREEN "Successfully sent the last updated value: %d v_%d\n" RESET, server->data.value, server->data.version);
+    write(1, buffer, size);
+    free(buffer);
+
+    TOOLS_copyNextServerDirection(id_server, &(server->next_server_direction), *server);
+
+    if (FRAME_sendReadResponse(client_fd, server->data.version, server->data.value) == EXIT_FAILURE) return EXIT_FAILURE;
+    return EXIT_SUCCESS;
+}
+
+int TRANSACTION_replyReadCommon(int client_fd, int id_server, int id_trans, Server *server) {
+    int next_fd, size;
+    char *buffer;
+    if (TOOLS_connect_server(&next_fd,
+                             server->next_server_direction.ip_address, 
+                             server->next_server_direction.passive_port) == EXIT_FAILURE) return EXIT_FAILURE; 
+
+    if (FRAME_sendReadRequest(next_fd, id_server, id_trans) == EXIT_FAILURE) return EXIT_FAILURE;
+    if (FRAME_readReadResponse(next_fd, &(server->data.version), &(server->data.value)) == EXIT_FAILURE) return EXIT_FAILURE;
+
+    size = asprintf(&buffer, BOLDGREEN "Updated value recieved: %d v_%d\n" RESET, server->data.value, server->data.version);
+    write(1, buffer, size);
+    free(buffer);
+
+    TOOLS_copyNextServerDirection(id_server, &(server->next_server_direction), *server);
+    
+    // Enviamos la respuesta al que nos ha preguntado a nosotros
+    if (FRAME_sendReadResponse(client_fd, server->data.version, server->data.value) == EXIT_FAILURE) return EXIT_FAILURE;
     return EXIT_SUCCESS;
 }

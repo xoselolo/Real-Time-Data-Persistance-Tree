@@ -36,8 +36,7 @@ void TOOLS_open_psocket(int* socket_fd, char* ip, int port) {
 
 int TOOLS_connect_server(int* socket_fd, char* ip, int port) {
     struct sockaddr_in s_addr;
-
-
+    
     //Crear el socket
     *socket_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
@@ -49,15 +48,11 @@ int TOOLS_connect_server(int* socket_fd, char* ip, int port) {
 
     //Omplir l'adreça del servidor amb el port i ip indicats
     memset(&s_addr, 0, sizeof(s_addr));
-
-
     s_addr.sin_family = AF_INET;
     if (port < 1 || port > 65535) {
         perror("invalid port");
         raise(SIGINT);
     }
-
-
     s_addr.sin_port = htons(port);
     s_addr.sin_addr.s_addr = inet_addr(ip);
 
@@ -152,6 +147,7 @@ void TOOLS_printServerDirections(Server server) {
 void TOOLS_copyNextServerDirection(int id_server, Direction * next, Server server){
     for (int i = 0; i < server.total_servers; i++) {
         if (server.servers_directions[i].id_server == id_server){
+            next->id_server = id_server;
             next->passive_port = server.servers_directions[i].passive_port;
             next->ping_port = server.servers_directions[i].ping_port;
             next->active_port = server.servers_directions[i].active_port;

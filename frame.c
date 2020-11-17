@@ -126,28 +126,33 @@ int FRAME_readReadRequest(int fd, int * id_server, int * id_trans) {
 } 
 
 int FRAME_readReadResponse(int fd, int * version, int * value) {
-    if (read(fd, version, sizeof(int)) != sizeof(int)) {
-        return EXIT_FAILURE;
-    }
-    
-    if (read(fd, value, sizeof(int)) != sizeof(int)) {
-        return EXIT_FAILURE;
-    }
+    char type;
+    if (read(fd, &type, sizeof(char)) != sizeof(char)) return EXIT_FAILURE;
+    if (type != READ) return EXIT_FAILURE;
+    if (read(fd, version, sizeof(int)) != sizeof(int)) return EXIT_FAILURE;
+    if (read(fd, value, sizeof(int)) != sizeof(int)) return EXIT_FAILURE;
 
     return EXIT_SUCCESS;
 } 
 
+int FRAME_readOriginReadResponse(int fd, int * version, int * value) {
+    if (read(fd, version, sizeof(int)) != sizeof(int)) return EXIT_FAILURE;
+    if (read(fd, value, sizeof(int)) != sizeof(int)) return EXIT_FAILURE;
+
+    return EXIT_SUCCESS;
+} 
+
+int FRAME_sendOriginReadResponse(int fd, int version, int value) {
+    if (write(fd, READ_RESPONSE_STR, sizeof(char)) != sizeof(char)) return EXIT_FAILURE;
+    if (write(fd, &version, sizeof(int)) != sizeof(int)) return EXIT_FAILURE;
+    if (write(fd, &value, sizeof(int)) != sizeof(int))  return EXIT_FAILURE;
+    return EXIT_SUCCESS;
+} 
+
 int FRAME_sendReadResponse(int fd, int version, int value) {
-    write(1, "Sending...\n", strlen("Sending...\n") * sizeof(char));
-
-    if (write(fd, &version, sizeof(int)) != sizeof(int)) {
-        return EXIT_FAILURE;
-    }
-
-    if (write(fd, &value, sizeof(int)) != sizeof(int)) {
-        return EXIT_FAILURE;
-    }
-
+    if (write(fd, READ_STR, sizeof(char)) != sizeof(char)) return EXIT_FAILURE;
+    if (write(fd, &version, sizeof(int)) != sizeof(int)) return EXIT_FAILURE;
+    if (write(fd, &value, sizeof(int)) != sizeof(int))  return EXIT_FAILURE;
     return EXIT_SUCCESS;
 } 
 
@@ -159,21 +164,9 @@ int FRAME_sendReadResponse(int fd, int version, int value) {
  * @return
  */
 int FRAME_sendReadRequest(int fd, int id_server, int id_trans) {
-    int n;
-
-    n = write(fd, "R", sizeof(char));
-    if(n <= 0){
-        return -1;
-    }
-    n = write(fd, &id_server, sizeof(int));
-    if(n <= 0){
-        return -1;
-    }
-    n = write(fd, &id_trans, sizeof(int));
-    if(n <= 0){
-        return -1;
-    }
-
+    if (write(fd, READ_STR, sizeof(char)) != sizeof(char)) return EXIT_FAILURE;
+    if (write(fd, &id_server, sizeof(int)) != sizeof(int)) return EXIT_FAILURE;
+    if (write(fd, &id_trans, sizeof(int)) != sizeof(int)) return EXIT_FAILURE;
     return EXIT_SUCCESS;
 }
 
@@ -189,11 +182,12 @@ int FRAME_sendAck(int fd) {
 }
 
 int FRAME_readAck(int fd) {
-    char ack[strlen(ACK_STR)];
+    char ack[strlen(ACK_STR)+1];
     
     if (read(fd, ack, strlen(ACK_STR)) != strlen(ACK_STR)) {
         return EXIT_FAILURE;
     }
+    ack[strlen(ACK_STR)] = 0;
     if (strcmp(ACK_STR, ack)) {
         return EXIT_FAILURE;
     }
