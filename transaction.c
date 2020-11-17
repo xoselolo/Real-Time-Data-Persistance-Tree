@@ -186,7 +186,7 @@ int TRANSACTION_readActive(Server server) {
         return EXIT_FAILURE;
     }
 
-    size = asprintf(&buffer, BOLDYELLOW "Read request sent to server %d, %s:%d\n\n" RESET, server.next_server_direction.id_server, server.next_server_direction.ip_address, server.next_server_direction.passive_port);
+    size = asprintf(&buffer, BOLDYELLOW "Read request sent to server %d, %s:%d\n" RESET, server.next_server_direction.id_server, server.next_server_direction.ip_address, server.next_server_direction.passive_port);
     write(1, buffer, size);
     free(buffer);
 
@@ -228,7 +228,7 @@ int TRANSACTION_replyReadLastUpdated(int client_fd, int id_server, Server *serve
     if (FRAME_sendOriginReadResponse(origin_fd, server->data.version, server->data.value) == EXIT_FAILURE) return EXIT_FAILURE;
     if (FRAME_readAck(origin_fd) == EXIT_FAILURE) return EXIT_FAILURE;
 
-    size = asprintf(&buffer, BOLDGREEN "Successfully sent the last updated value: %d v_%d\n" RESET, server->data.value, server->data.version);
+    size = asprintf(&buffer, BOLDGREEN "Successfully sent the last updated value: %d v_%d\n\n" RESET, server->data.value, server->data.version);
     write(1, buffer, size);
     free(buffer);
 
@@ -248,7 +248,7 @@ int TRANSACTION_replyReadCommon(int client_fd, int id_server, int id_trans, Serv
     if (FRAME_sendReadRequest(next_fd, id_server, id_trans) == EXIT_FAILURE) return EXIT_FAILURE;
     if (FRAME_readReadResponse(next_fd, &(server->data.version), &(server->data.value)) == EXIT_FAILURE) return EXIT_FAILURE;
 
-    size = asprintf(&buffer, BOLDGREEN "Updated value recieved: %d v_%d\n" RESET, server->data.value, server->data.version);
+    size = asprintf(&buffer, BOLDGREEN "Updated value recieved: %d v_%d\n\n" RESET, server->data.value, server->data.version);
     write(1, buffer, size);
     free(buffer);
 

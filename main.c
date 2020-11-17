@@ -94,22 +94,6 @@ int main(int argc, char** argv) {
                 // CONNECT to (passive) next server
                 if(server.is_read_only == 'R'){
                     TRANSACTION_readActive(server);
-                    // create the transaction id and send the READ REQUEST
-                    /*int id_transaction = TRANSACTION_generateId(server.transaction_trees[0]);
-                    if(FRAME_sendReadRequest(active_fd, server.my_direction.id_server, id_transaction) == EXIT_SUCCESS){
-                        TRANSACTION_BINARY_TREE_add(&(server.transaction_trees[0]), id_transaction, server.my_direction.id_server);
-
-                        //printf("Server %d transaction %d added!\n", server.my_direction.id_server, id_transaction);
-
-                        // active wait for response
-                        if(FRAME_readReadResponse(active_fd, &(server.data.version), &(server.data.value)) == EXIT_SUCCESS){
-                            printf("Value (GET) = %d\nv_%d\n\n", server.data.value, server.data.version);
-                            FRAME_sendAck(active_fd);
-                            //printf("I'm top!\n");
-                            server.is_first = 1;
-                            server.next_server_direction.id_server = -1;
-                        }
-                    }*/
 
                 } else{
                     // create the transaction id and send the READ REQUEST
