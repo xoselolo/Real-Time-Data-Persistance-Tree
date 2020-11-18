@@ -24,7 +24,7 @@ int TRANSACTION_readPassive(Server *server, int fd_client, int id_server, int id
     int value, version;
     Direction aux;
 
-    // TODO: AFEGIR EL IDSERVER DEL QUE TRANSMET EL MISSATGE: per a que de tornada no li torni a arribar al que la creat
+    // TODO: AFEGIR EL IDSERVER DEL QUE TRANSMET EL MISSATGE: per a que de tornada no li torni a arribar al que l'ha creat
 
     printf("\n\n STEP 1\n");
     if (server->next_server_direction.id_server != -1) {
@@ -171,6 +171,8 @@ int TRANSACTION_connectPassive(int fd_client, Server *server) {
     return EXIT_SUCCESS;
 }
 
+
+
 int TRANSACTION_readActive(Server server) {
     int active_fd, version, value, size;
     char *buffer;
@@ -235,6 +237,7 @@ int TRANSACTION_replyReadLastUpdated(int client_fd, int id_server, Server *serve
     TOOLS_copyNextServerDirection(id_server, &(server->next_server_direction), *server);
 
     if (FRAME_sendReadResponse(client_fd, server->data.version, server->data.value) == EXIT_FAILURE) return EXIT_FAILURE;
+    printf("Finish\n");
     return EXIT_SUCCESS;
 }
 
@@ -256,5 +259,98 @@ int TRANSACTION_replyReadCommon(int client_fd, int id_server, int id_trans, Serv
     
     // Enviamos la respuesta al que nos ha preguntado a nosotros
     if (FRAME_sendReadResponse(client_fd, server->data.version, server->data.value) == EXIT_FAILURE) return EXIT_FAILURE;
+    return EXIT_SUCCESS;
+}
+
+
+
+int TRANSACTION_updateActive(Server server) {
+    int active_fd, version, value, size;
+    char *buffer;
+
+    if (TOOLS_connect_server(&active_fd, server.next_server_direction.ip_address, server.next_server_direction.passive_port) == EXIT_FAILURE) {
+        close(active_fd);
+        return EXIT_FAILURE;
+    }
+
+    int id_transaction = TRANSACTION_generateId(server.transaction_trees[0]);
+    if(FRAME_sendUpdateRequest(active_fd, server.my_direction.id_server, id_transaction, server.operation) == EXIT_FAILURE) {
+        close(active_fd);
+        return EXIT_FAILURE;
+    }
+
+    size = asprintf(&buffer, BOLDYELLOW "Update request sent to server %d, %s:%d\n" RESET, server.next_server_direction.id_server, server.next_server_direction.ip_address, server.next_server_direction.passive_port);
+    write(1, buffer, size);
+    free(buffer);
+
+    TRANSACTION_BINARY_TREE_add(&(server.transaction_trees[0]), id_transaction, server.my_direction.id_server);
+
+    // wait for response
+    SEM_init(&sem_read_response, 0);
+    SEM_wait(&sem_read_response);
+
+    if(FRAME_readUpdateResponse(active_fd, &version, &value) == EXIT_FAILURE) {
+        close(active_fd);
+        return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS;
+}
+
+int TRANSACTION_readUpdatePassive(int fd_client, Server *server) {
+    int size;
+    char *buffer;
+
+    if(FRAME_readOriginUpdateResponse(fd_client, &(server->data.version), &(server->data.value)) == EXIT_FAILURE) return EXIT_FAILURE;
+    FRAME_sendAck(fd_client);
+    server->next_server_direction.id_server = -1;
+    size = asprintf(&buffer, BOLDGREEN "Response received %d v_%d\n\n" RESET, server->data.version, server->data.value);
+    write(1, buffer, size);
+    free(buffer);
+    SEM_signal(&sem_read_response);
+    return EXIT_SUCCESS;
+}
+
+int TRANSACTION_replyUpdateLastUpdated(int client_fd, int id_server, Server *server, Operation operation) {
+    TOOLS_operate(&server->data.value, &server->data.version, operation);
+
+    Direction origin = TOOLS_findDirection(server->servers_directions, server->total_servers, id_server);
+    int origin_fd, size;
+    char *buffer;
+
+    if (TOOLS_connect_server(&origin_fd,
+                             origin.ip_address,
+                             origin.passive_port) == EXIT_FAILURE) return EXIT_FAILURE;
+    if (FRAME_sendOriginUpdateResponse(origin_fd, server->data.version, server->data.value) == EXIT_FAILURE) return EXIT_FAILURE;
+    if (FRAME_readAck(origin_fd) == EXIT_FAILURE) return EXIT_FAILURE;
+
+    size = asprintf(&buffer, BOLDGREEN "Successfully sent the last updated value: %d v_%d\n\n" RESET, server->data.value, server->data.version);
+    write(1, buffer, size);
+    free(buffer);
+
+    TOOLS_copyNextServerDirection(id_server, &(server->next_server_direction), *server);
+
+    if (FRAME_sendUpdateResponse(client_fd, server->data.version, server->data.value) == EXIT_FAILURE) return EXIT_FAILURE;
+    printf("Finish\n");
+    return EXIT_SUCCESS;
+}
+
+int TRANSACTION_replyUpdateCommon(int client_fd, int id_server, int id_trans, Server *server, Operation operation) {
+    int next_fd, size;
+    char *buffer;
+    if (TOOLS_connect_server(&next_fd,
+                             server->next_server_direction.ip_address,
+                             server->next_server_direction.passive_port) == EXIT_FAILURE) return EXIT_FAILURE;
+
+    if (FRAME_sendUpdateRequest(next_fd, id_server, id_trans, operation) == EXIT_FAILURE) return EXIT_FAILURE;
+    if (FRAME_readUpdateResponse(next_fd, &(server->data.version), &(server->data.value)) == EXIT_FAILURE) return EXIT_FAILURE;
+
+    size = asprintf(&buffer, BOLDGREEN "Updated value recieved: %d v_%d\n\n" RESET, server->data.value, server->data.version);
+    write(1, buffer, size);
+    free(buffer);
+
+    TOOLS_copyNextServerDirection(id_server, &(server->next_server_direction), *server);
+
+    // Enviamos la respuesta al que nos ha preguntado a nosotros
+    if (FRAME_sendUpdateResponse(client_fd, server->data.version, server->data.value) == EXIT_FAILURE) return EXIT_FAILURE;
     return EXIT_SUCCESS;
 }

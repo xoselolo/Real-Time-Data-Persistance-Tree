@@ -90,7 +90,8 @@ int main(int argc, char** argv) {
                     printf("Value (UPDATE) v_%d  == %d\n", server.data.version, server.data.value);
 
                 }
-            }else{
+            }
+            else{
                 // CONNECT to (passive) next server
                 if(server.is_read_only == 'R'){
                     TRANSACTION_readActive(server);

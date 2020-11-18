@@ -140,14 +140,28 @@ int FRAME_readOriginReadResponse(int fd, int * version, int * value) {
     if (read(fd, value, sizeof(int)) != sizeof(int)) return EXIT_FAILURE;
 
     return EXIT_SUCCESS;
-} 
+}
+
+int FRAME_readOriginUpdateResponse(int fd, int * version, int * value) {
+    if (read(fd, version, sizeof(int)) != sizeof(int)) return EXIT_FAILURE;
+    if (read(fd, value, sizeof(int)) != sizeof(int)) return EXIT_FAILURE;
+
+    return EXIT_SUCCESS;
+}
 
 int FRAME_sendOriginReadResponse(int fd, int version, int value) {
     if (write(fd, READ_RESPONSE_STR, sizeof(char)) != sizeof(char)) return EXIT_FAILURE;
     if (write(fd, &version, sizeof(int)) != sizeof(int)) return EXIT_FAILURE;
     if (write(fd, &value, sizeof(int)) != sizeof(int))  return EXIT_FAILURE;
     return EXIT_SUCCESS;
-} 
+}
+
+int FRAME_sendOriginUpdateResponse(int fd, int version, int value) {
+    if (write(fd, UPDATE_RESPONSE_STR, sizeof(char)) != sizeof(char)) return EXIT_FAILURE;
+    if (write(fd, &version, sizeof(int)) != sizeof(int)) return EXIT_FAILURE;
+    if (write(fd, &value, sizeof(int)) != sizeof(int))  return EXIT_FAILURE;
+    return EXIT_SUCCESS;
+}
 
 int FRAME_sendReadResponse(int fd, int version, int value) {
     if (write(fd, READ_STR, sizeof(char)) != sizeof(char)) return EXIT_FAILURE;

@@ -15,5 +15,5 @@ int TOOLS_connect_server(int* socket_fd, char* ip, int port);
 Direction TOOLS_findDirection(Direction * directions, int n_directions, int id_server);
 void TOOLS_printServerDirections(Server server);
 void TOOLS_copyNextServerDirection(int id_server, Direction * next, Server server);
-
+void TOOLS_operate(int* value, int* version, Operation operation);
 #endif /* _TOOLS_H_ */

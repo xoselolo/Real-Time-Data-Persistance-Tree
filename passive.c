@@ -71,7 +71,7 @@ void * PASSIVE_server(void * arg) {
                     perror(ERR_TRANSACTION_EXISTS);
                 }*/
                 // check if i'm top or not
-                if(server->is_first == 1){
+                if(server->next_server_direction.id_server == -1){
                     switch (operation.operator) {
                         case '+':
                             printf("suma\n");
@@ -96,8 +96,8 @@ void * PASSIVE_server(void * arg) {
                     // Nos reapuntamos al mas actualizado
                     server->next_server_direction.id_server = id_server;
                     TOOLS_copyNextServerDirection(id_server, &(server->next_server_direction), *server);
-                    server->is_first = 0;
-                }else{
+                }
+                else{
                     printf("--- 5 NOT FIRST\n");
                     // connect to next and send him the read request
                     if (TOOLS_connect_server(&fd_passive_to_next, server->next_server_direction.ip_address, server->next_server_direction.passive_port) == EXIT_SUCCESS){
@@ -106,7 +106,6 @@ void * PASSIVE_server(void * arg) {
                         // Esperamos a que responda
                         FRAME_readUpdateResponse(fd_passive_to_next, &(server->data.version), &(server->data.value));
                         // Nos reapuntamos al mas actualizado
-                        server->is_first = 0;
                         server->next_server_direction.id_server = id_server;
                         TOOLS_copyNextServerDirection(id_server, &(server->next_server_direction), *server);
                         // Enviamos la respuesta al que nos ha preguntado a nosotros
@@ -118,6 +117,9 @@ void * PASSIVE_server(void * arg) {
             case READ_RESPONSE:
                 return_val = TRANSACTION_readResponsePassive(client_fd, server);
                 break;
+
+            case UPDATE_RESPONSE:
+                return_val = TRANSACTION_Respo
 
             case ACK:
 

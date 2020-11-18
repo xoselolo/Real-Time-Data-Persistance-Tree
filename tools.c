@@ -156,3 +156,24 @@ void TOOLS_copyNextServerDirection(int id_server, Direction * next, Server serve
         }
     }
 }
+
+void TOOLS_operate(int* value, int* version, Operation operation){
+    switch (operation.operator) {
+        case '+':
+            *value += operation.operand;
+            break;
+        case '-':
+            *value -= operation.operand;
+            break;
+        case '*':
+            *value *= operation.operand;
+            break;
+        case '/':
+            if(operation.operand == 0)
+                *value = 0;
+            else
+                *value /= operation.operand;
+            break;
+    }
+    *version ++;
+}

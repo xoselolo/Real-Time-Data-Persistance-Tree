@@ -7,11 +7,13 @@
 #define CONNECT 'C'
 #define READ 'R'
 #define READ_RESPONSE 'S'
+#define UPDATE_RESPONSE 'K'
 #define ACK 'A'
 #define UPDATE 'U'
 #define READ_STR "R"
 #define ACK_STR "A"
 #define READ_RESPONSE_STR "S"
+#define UPDATE_RESPONSE_STR "K"
 
 #define ERR_ACK 2
 #define ERR_SRVR_NOT_FOUND 3
@@ -38,5 +40,8 @@ int FRAME_sendUpdateRequest(int active_fd, int id_server, int id_transaction, Op
 int FRAME_readUpdateRequest(int fd, int * id_server, int * id_trans, Operation* operation);
 int FRAME_sendUpdateResponse(int fd, int version, int value);
 int FRAME_readUpdateResponse(int fd, int * version, int * value);
+
+int FRAME_readOriginUpdateResponse(int fd, int * version, int * value);
+int FRAME_sendOriginUpdateResponse(int fd, int version, int value);
 
 #endif //FRAME_H
