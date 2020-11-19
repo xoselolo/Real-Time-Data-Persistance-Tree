@@ -175,5 +175,5 @@ void TOOLS_operate(int* value, int* version, Operation operation){
                 *value /= operation.operand;
             break;
     }
-    *version ++;
+    (*version) ++;
 }

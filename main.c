@@ -97,6 +97,7 @@ int main(int argc, char** argv) {
                     TRANSACTION_readActive(server);
 
                 } else{
+                    TRANSACTION_updateActive(server);
                     // create the transaction id and send the READ REQUEST
                     /*int id_transaction = TRANSACTION_generateId(server.transaction_trees[0]);
                     if(FRAME_sendUpdateRequest(active_fd, server.my_direction.id_server, id_transaction, server.operation) == EXIT_SUCCESS){

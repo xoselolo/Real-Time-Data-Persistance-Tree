@@ -296,7 +296,7 @@ int TRANSACTION_updateActive(Server server) {
     return EXIT_SUCCESS;
 }
 
-int TRANSACTION_readUpdatePassive(int fd_client, Server *server) {
+int TRANSACTION_updateResponsePassive(int fd_client, Server *server) {
     int size;
     char *buffer;
 

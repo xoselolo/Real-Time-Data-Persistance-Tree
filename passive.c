@@ -13,7 +13,7 @@ void * PASSIVE_server(void * arg) {
     socklen_t len = sizeof(s_addr);
     int type;
     Operation operation;
-    int fd_passive_to_next;
+    //int fd_passive_to_next;
 
     int id_server, id_trans;
 
@@ -25,7 +25,7 @@ void * PASSIVE_server(void * arg) {
     free(buffer);
 
     while (1) {
-        fd_passive_to_next = -1;
+        //fd_passive_to_next = -1;
         client_fd = accept(server_fd, (void *) &s_addr, &len);
         size = read(client_fd, &type, 1);
 
@@ -61,6 +61,12 @@ void * PASSIVE_server(void * arg) {
 
             case UPDATE:
                 FRAME_readUpdateRequest(client_fd, &id_server, &id_trans, &operation);
+                if(server->next_server_direction.id_server == -1){
+                    return_val = TRANSACTION_replyUpdateLastUpdated(client_fd, id_server, server, operation);
+
+                } else {
+                    return_val = TRANSACTION_replyUpdateCommon(client_fd, id_server, id_trans, server, operation);
+                }
                 //Put the transaction on the tree
                 /* --> ToDo: Poner este cacho de código para comprobar si la transacción sigue en ciclo
                 int index_tree = TRANSACTION_BINARY_TREE_findRoot(server->transaction_trees, id_server, server->total_servers);
@@ -69,12 +75,12 @@ void * PASSIVE_server(void * arg) {
                     TRANSACTION_BINARY_TREE_add(&(server->transaction_trees[index_tree]), id_trans, id_server);
                 }else{
                     perror(ERR_TRANSACTION_EXISTS);
-                }*/
+                }
                 // check if i'm top or not
                 if(server->next_server_direction.id_server == -1){
                     switch (operation.operator) {
                         case '+':
-                            printf("suma\n");
+                            //printf("suma\n");
                             server->data.value += operation.operand;
                             break;
                         case '-':
@@ -111,7 +117,7 @@ void * PASSIVE_server(void * arg) {
                         // Enviamos la respuesta al que nos ha preguntado a nosotros
                         FRAME_sendUpdateResponse(client_fd, server->data.version, server->data.value);
                     }
-                }
+                }*/
                 break;
 
             case READ_RESPONSE:
@@ -119,7 +125,7 @@ void * PASSIVE_server(void * arg) {
                 break;
 
             case UPDATE_RESPONSE:
-                return_val = TRANSACTION_Respo
+                return_val = TRANSACTION_updateResponsePassive(client_fd, server);
 
             case ACK:
 
