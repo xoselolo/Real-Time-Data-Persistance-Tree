@@ -10,6 +10,8 @@ extern int ping_fd;
 extern int ping_client_fd;
 semaphore sem_read_response;
 
+void memory_free();
+
 static void sigint() {
     if (server_fd != -1) {
         close(server_fd);
@@ -28,6 +30,35 @@ static void sigint() {
         ping_client_fd = -1;
     }
     raise(SIGKILL);
+}
+
+void memory_free(Server* server) {
+    char* buffer;
+
+    int size = asprintf(&buffer, BOLDRED "MEMORY FREE ----- 25/100.\n" RESET);
+    write(1, buffer, size);
+
+    for (int i = 0; i < server->total_servers; i++) {
+        TRANSACTION_BINARY_TREE_destroy(&(server->transaction_trees[i]));
+    }
+
+    size = asprintf(&buffer, BOLDRED "MEMORY FREE ----- 50/100.\n" RESET);
+    write(1, buffer, size);
+
+    if (server->servers_directions != NULL){
+        for (int i = 0; i < server->total_servers; i++) {
+            free(server->servers_directions[i].ip_address);
+        }
+        free(server->servers_directions);
+
+    }
+    size = asprintf(&buffer, BOLDRED "MEMORY FREE ----- 75/100.\n" RESET);
+    write(1, buffer, size);
+
+    free(server->my_direction.ip_address);
+
+    size = asprintf(&buffer, BOLDRED "MEMORY FREE ----- 100/100.\n" RESET);
+    write(1, buffer, size);
 }
 
 int main(int argc, char** argv) {
@@ -95,22 +126,6 @@ int main(int argc, char** argv) {
 
                 } else{
                     return_val = TRANSACTION_updateActive(server);
-                    // create the transaction id and send the READ REQUEST
-                    /*int id_transaction = TRANSACTION_generateId(server.transaction_trees[0]);
-                    if(FRAME_sendUpdateRequest(active_fd, server.my_direction.id_server, id_transaction, server.operation) == EXIT_SUCCESS){
-                        TRANSACTION_BINARY_TREE_add(&(server.transaction_trees[0]), id_transaction, server.my_direction.id_server);
-
-                        //printf("Server %d transaction %d added!\n", server.my_direction.id_server, id_transaction);
-
-                        // active wait for response
-                        if(FRAME_readUpdateResponse(active_fd, &(server.data.version), &(server.data.value)) == EXIT_SUCCESS){
-                            printf("Value (UPDATE) = %d\nv_%d\n\n", server.data.value, server.data.version);
-
-                            FRAME_sendAck(active_fd);
-                            server.is_first = 1;
-                            server.next_server_direction.id_server = -1;
-                        }
-                    }*/
                 }
 
                 switch(return_val) {
@@ -129,11 +144,12 @@ int main(int argc, char** argv) {
 
         }
 
+        pthread_kill(t_passive, SIGINT);
+
+        memory_free(&server);
+        free(buffer);
     }
 
-    while (1) {
-        pause();
-    }
-    
+
     return 0;
 }
