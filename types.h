@@ -4,7 +4,7 @@
 
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
-#endif //_GNU_SOURCE
+#endif /*_GNU_SOURCE*/
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -27,12 +27,16 @@
 #define BOLDRED   "\033[1m\033[31m"
 #define BOLDBLUE "\033[1m\033[34m"
 #define BOLDYELLOW  "\033[1m\033[33m" 
+#define BOLDMAGENTA "\033[1m\033[35m" 
 #define RESET     "\033[0m"
 #define YELLOW  "\033[33m" 
+
 
 #define ERR_ARGS    BOLDRED "Error, missing arguments." RESET " Usage: ./ex0 ./config/server_config.txt\n"
 #define ERR_CONN    BOLDRED "Connection to client failed" RESET
 #define ERR_TRANSACTION_EXISTS    BOLDRED "Transaction already exists. Loop in tree" RESET
+
+#define EXIT_NEXT_DOWN 2
 
 typedef struct{
     char operator; // + - * /
@@ -79,15 +83,6 @@ typedef struct{
 
     int total_servers; // Config + increment when added new servers
     Direction* servers_directions; // Config + new added servers {[0]->[ip,port] | [1]->[ip,port] ... [N]->[ip,port]}
-
-    // --------- SOCKET 1 - Client (active) ---------
-    int fd_active;
-
-    // --------- SOCKET 2 - Server (passive) ---------
-    int fd_passive;
-
-    // --------- SOCKET 3 - Server (ping) ---------
-    int fd_ping;
 
 }Server;
 

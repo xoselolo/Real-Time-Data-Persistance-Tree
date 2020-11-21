@@ -27,4 +27,6 @@ int TRANSACTION_updateResponsePassive(int fd_client, Server *server);
 int TRANSACTION_replyUpdateLastUpdated(int client_fd, int id_server, Server *server, Operation operation);
 int TRANSACTION_replyUpdateCommon(int client_fd, int id_server, int id_trans, Server *server, Operation operation);
 
+void TRANSACTION_reconnect(Server * server);
+
 #endif //_TRANSACTION_H

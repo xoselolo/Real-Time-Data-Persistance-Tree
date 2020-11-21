@@ -186,9 +186,6 @@ int FRAME_sendReadRequest(int fd, int id_server, int id_trans) {
 
 
 int FRAME_sendAck(int fd) {
-    if (write(fd, ACK_STR, sizeof(char)) != sizeof(char)) {
-        return EXIT_FAILURE;
-    }
     if (write(fd, ACK_STR, strlen(ACK_STR)) != sizeof(char)) {
         return EXIT_FAILURE;
     }
@@ -196,15 +193,10 @@ int FRAME_sendAck(int fd) {
 }
 
 int FRAME_readAck(int fd) {
-    char ack[strlen(ACK_STR)+1];
+    char ack;
     
-    if (read(fd, ack, strlen(ACK_STR)) != strlen(ACK_STR)) {
-        return EXIT_FAILURE;
-    }
-    ack[strlen(ACK_STR)] = 0;
-    if (strcmp(ACK_STR, ack)) {
-        return EXIT_FAILURE;
-    }
+    if (read(fd, &ack, sizeof(char)) != sizeof(char)) return EXIT_FAILURE;
+    if (ack != ACK) return EXIT_FAILURE;
     return EXIT_SUCCESS;
 }
 
@@ -278,5 +270,37 @@ int FRAME_readUpdateResponse(int fd, int * version, int * value) {
         return EXIT_FAILURE;
     }
 
+    return EXIT_SUCCESS;
+}
+
+int FRAME_sendPingRequest(int fd) {
+    if (write(fd, PING_STR, sizeof(char)) != sizeof(char)) return EXIT_FAILURE;
+    return EXIT_SUCCESS;
+}
+
+int FRAME_readPingRequest(int fd) {
+    char type;
+    if (read(fd, &type, sizeof(char)) != sizeof(char)) return EXIT_FAILURE;
+    if (type != PING) return EXIT_FAILURE;
+    return EXIT_SUCCESS;
+}
+
+int FRAME_sendPingResponse(int fd, int version, int value, int isFirst) {
+    printf("isfirst %d\n", isFirst);
+    if (write(fd, PING_STR, sizeof(char)) != sizeof(char)) return EXIT_FAILURE;
+    if (write(fd, &version, sizeof(int)) != sizeof(int)) return EXIT_FAILURE;
+    if (write(fd, &value, sizeof(int)) != sizeof(int)) return EXIT_FAILURE;
+    if (write(fd, &isFirst, sizeof(int)) != sizeof(int)) return EXIT_FAILURE;
+    return EXIT_SUCCESS;
+}
+
+int FRAME_readPingResponse(int fd, int *version, int *value, int *isFirst) {
+    char type;
+    if (read(fd, &type, sizeof(char)) != sizeof(char)) return EXIT_FAILURE;
+    if (type != PING) return EXIT_FAILURE;
+    if (read(fd, version, sizeof(int)) != sizeof(int)) return EXIT_FAILURE;
+    if (read(fd, value, sizeof(int)) != sizeof(int)) return EXIT_FAILURE;
+    if (read(fd, isFirst, sizeof(int)) != sizeof(int)) return EXIT_FAILURE;
+    printf("read isfirst %d\n", *isFirst);
     return EXIT_SUCCESS;
 }

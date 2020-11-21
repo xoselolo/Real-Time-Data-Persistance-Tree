@@ -18,7 +18,6 @@ void * PASSIVE_server(void * arg) {
     int id_server, id_trans;
 
     TOOLS_open_psocket(&server_fd, server->my_direction.ip_address, server->my_direction.passive_port);
-    server->fd_passive = server_fd;
 
     size = asprintf(&buffer, BOLDGREEN "Passive server started at %s:%d\n" RESET, server->my_direction.ip_address, server->my_direction.passive_port);
     write(1, buffer, size);
@@ -39,7 +38,12 @@ void * PASSIVE_server(void * arg) {
                 break;
 
             case READ:
-                FRAME_readReadRequest(client_fd, &id_server, &id_trans);
+
+                size = asprintf(&buffer, BOLDMAGENTA "Read received\n" RESET);
+                write(1, buffer, size);
+                free(buffer);
+                return_val = FRAME_readReadRequest(client_fd, &id_server, &id_trans);
+                if (return_val == EXIT_FAILURE) break;
                 //Put the transaction on the tree
                 /* --> ToDo: Poner este cacho de código para comprobar si la transacción sigue en ciclo
                 int index_tree = TRANSACTION_BINARY_TREE_findRoot(server->transaction_trees, id_server, server->total_servers);
@@ -60,6 +64,9 @@ void * PASSIVE_server(void * arg) {
                 break;
 
             case UPDATE:
+                size = asprintf(&buffer, BOLDMAGENTA "Update received\n" RESET);
+                write(1, buffer, size);
+                free(buffer);
                 FRAME_readUpdateRequest(client_fd, &id_server, &id_trans, &operation);
                 if(server->next_server_direction.id_server == -1){
                     return_val = TRANSACTION_replyUpdateLastUpdated(client_fd, id_server, server, operation);
@@ -76,48 +83,7 @@ void * PASSIVE_server(void * arg) {
                 }else{
                     perror(ERR_TRANSACTION_EXISTS);
                 }
-                // check if i'm top or not
-                if(server->next_server_direction.id_server == -1){
-                    switch (operation.operator) {
-                        case '+':
-                            //printf("suma\n");
-                            server->data.value += operation.operand;
-                            break;
-                        case '-':
-                            printf("resta\n");
-                            server->data.value -= operation.operand;
-                            break;
-                        case '*':
-                            printf("product\n");
-                            server->data.value *= operation.operand;
-                            break;
-                        case '/':
-                            printf("division\n");
-                            server->data.value /= operation.operand;
-                            break;
-                    }
-                    server->data.version++;
-                    FRAME_sendUpdateResponse(client_fd, server->data.version, server->data.value);
-                    FRAME_readAck(client_fd);
-                    // Nos reapuntamos al mas actualizado
-                    server->next_server_direction.id_server = id_server;
-                    TOOLS_copyNextServerDirection(id_server, &(server->next_server_direction), *server);
-                }
-                else{
-                    printf("--- 5 NOT FIRST\n");
-                    // connect to next and send him the read request
-                    if (TOOLS_connect_server(&fd_passive_to_next, server->next_server_direction.ip_address, server->next_server_direction.passive_port) == EXIT_SUCCESS){
-                        // le enviamos al next la request
-                        FRAME_sendUpdateRequest(fd_passive_to_next, id_server, id_trans, operation);
-                        // Esperamos a que responda
-                        FRAME_readUpdateResponse(fd_passive_to_next, &(server->data.version), &(server->data.value));
-                        // Nos reapuntamos al mas actualizado
-                        server->next_server_direction.id_server = id_server;
-                        TOOLS_copyNextServerDirection(id_server, &(server->next_server_direction), *server);
-                        // Enviamos la respuesta al que nos ha preguntado a nosotros
-                        FRAME_sendUpdateResponse(client_fd, server->data.version, server->data.value);
-                    }
-                }*/
+                */
                 break;
 
             case READ_RESPONSE:
@@ -126,21 +92,25 @@ void * PASSIVE_server(void * arg) {
 
             case UPDATE_RESPONSE:
                 return_val = TRANSACTION_updateResponsePassive(client_fd, server);
-
-            case ACK:
-
                 break;
         }
 
         switch (return_val) {
-        case EXIT_FAILURE:
-            size = asprintf(&buffer, BOLDRED "Error on transaction of type %c\n" RESET, type);
-            write(1, buffer, size);
-            free(buffer);
-            break;
-        
-        default:
-            break;
+            case EXIT_FAILURE:
+                size = asprintf(&buffer, BOLDRED "Error on transaction of type %c\n" RESET, type);
+                write(1, buffer, size);
+                free(buffer);
+                break;
+            
+            case EXIT_NEXT_DOWN:
+                size = asprintf(&buffer, BOLDRED "Next server is down, trying to reconnect...\n" RESET);
+                write(1, buffer, size);
+                free(buffer);
+                TRANSACTION_reconnect(server);
+                break;
+    
+            default:
+                break;
         }
 
         close(client_fd);

@@ -1,10 +1,13 @@
 #include "config.h"
 #include "passive.h"
+#include "ping.h"
 #include "types.h"
 #include "transaction.h"
 
 extern int server_fd;
 extern int client_fd;
+extern int ping_fd;
+extern int ping_client_fd;
 semaphore sem_read_response;
 
 static void sigint() {
@@ -16,6 +19,14 @@ static void sigint() {
         close(client_fd);
         client_fd = -1;
     }
+    if (ping_fd != -1) {
+        close(ping_fd);
+        ping_fd = -1;
+    }
+    if (ping_client_fd != -1) {
+        close(ping_client_fd);
+        ping_client_fd = -1;
+    }
     raise(SIGKILL);
 }
 
@@ -23,7 +34,7 @@ int main(int argc, char** argv) {
 
     Server server;
     char *buffer;
-    int size;
+    int size, return_val;
     signal(SIGINT, sigint);
 
     if (argc != 2){
@@ -33,39 +44,25 @@ int main(int argc, char** argv) {
 	    SEM_init(&sem_read_response, 0);
 
         pthread_t t_passive;
-        //pthread_t t_ping;
+        pthread_t t_ping;
 
-        server.data.value = 0;
-        server.data.version = 0;
-
+        server.data.value = -1;
+        server.data.version = -1;
         server = readConfig(argv[1]);
 
-        //printf("READ\n");
-        // TODO: connection protocol
         if (TRANSACTION_sendConnect(&server) == EXIT_FAILURE) {
-            size = asprintf(&buffer, BOLDRED "Unable to connect to the servers.\n" RESET);
+            size = asprintf(&buffer, BOLDRED "Unable to connect to servers.\n" RESET);
             write(1, buffer, size);
             free(buffer);
             raise(SIGINT);
         }
 
         pthread_create(&t_passive, NULL, PASSIVE_server, &server);
+        pthread_create(&t_ping, NULL, PING_server, &server);
 
         // TODO: Create ping thread
 
-
-       /* while(1) {
-            int option = TOOLS_displayMenu();
-            switch (option) {
-                case 1:
-                
-                    break;
-            }
-        }*/
-
-
         for(int i = 0; i < 10; i++){
-            //printf("\n");
             // I'm the first or the top server
             if(server.next_server_direction.id_server == -1){ // NO hem de connectar-nos amb ningú
                 printf("I'm first\n");
@@ -94,10 +91,10 @@ int main(int argc, char** argv) {
             else{
                 // CONNECT to (passive) next server
                 if(server.is_read_only == 'R'){
-                    TRANSACTION_readActive(server);
+                    return_val = TRANSACTION_readActive(server);
 
                 } else{
-                    TRANSACTION_updateActive(server);
+                    return_val = TRANSACTION_updateActive(server);
                     // create the transaction id and send the READ REQUEST
                     /*int id_transaction = TRANSACTION_generateId(server.transaction_trees[0]);
                     if(FRAME_sendUpdateRequest(active_fd, server.my_direction.id_server, id_transaction, server.operation) == EXIT_SUCCESS){
@@ -115,18 +112,24 @@ int main(int argc, char** argv) {
                         }
                     }*/
                 }
+
+                switch(return_val) {
+                    case EXIT_NEXT_DOWN:
+                        size = asprintf(&buffer, BOLDRED "Next server is down, trying to reconnect...\n" RESET);
+                        write(1, buffer, size);
+                        free(buffer);
+                        TRANSACTION_reconnect(&server);
+                        break;
+                }
+
+
             }
 
-            //printf("---- Sleep %d\n", i);
             sleep(server.sleep_time);
 
         }
 
     }
-
-
-    //int fd_client;
-    //TOOLS_connect_server(&fd_client, "127.0.0.1", 8840);
 
     while (1) {
         pause();

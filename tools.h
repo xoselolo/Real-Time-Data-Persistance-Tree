@@ -13,7 +13,9 @@ void TOOLS_open_psocket(int* socket_fd, char* ip, int port);
 char* TOOLS_read_until(int fd, char end);
 int TOOLS_connect_server(int* socket_fd, char* ip, int port);
 Direction TOOLS_findDirection(Direction * directions, int n_directions, int id_server);
-void TOOLS_printServerDirections(Server server);
+void TOOLS_printDirections(Direction *directions, int n_directions);
 void TOOLS_copyNextServerDirection(int id_server, Direction * next, Server server);
+void TOOLS_copyDirection(Direction *direction, Direction values);
 void TOOLS_operate(int* value, int* version, Operation operation);
+void TOOLS_removeDirection(int id_server, Direction **directions, int *n_directions);
 #endif /* _TOOLS_H_ */

@@ -113,7 +113,7 @@ Server readConfig(char* filename){
 
     }
 
-    TOOLS_printServerDirections(me);
+    TOOLS_printDirections(me.servers_directions, me.total_servers);
     printf("\n\n\n");
 
     return me;

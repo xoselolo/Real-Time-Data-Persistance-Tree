@@ -10,10 +10,13 @@
 #define UPDATE_RESPONSE 'K'
 #define ACK 'A'
 #define UPDATE 'U'
+#define PING 'P'
+
 #define READ_STR "R"
-#define ACK_STR "A"
 #define READ_RESPONSE_STR "S"
 #define UPDATE_RESPONSE_STR "K"
+#define ACK_STR "A"
+#define PING_STR "P"
 
 #define ERR_ACK 2
 #define ERR_SRVR_NOT_FOUND 3
@@ -43,5 +46,10 @@ int FRAME_readUpdateResponse(int fd, int * version, int * value);
 
 int FRAME_readOriginUpdateResponse(int fd, int * version, int * value);
 int FRAME_sendOriginUpdateResponse(int fd, int version, int value);
+
+int FRAME_sendPingRequest(int fd);
+int FRAME_readPingRequest(int fd);
+int FRAME_sendPingResponse(int fd, int version, int value, int isFirst);
+int FRAME_readPingResponse(int fd, int *version, int *value, int *isFirst);
 
 #endif //FRAME_H

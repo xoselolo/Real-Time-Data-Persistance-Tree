@@ -19,68 +19,6 @@ int TRANSACTION_generateId(Node* root){
     return transaction_id;
 }
 
-int TRANSACTION_readPassive(Server *server, int fd_client, int id_server, int id_trans) {
-    int fd;
-    int value, version;
-    Direction aux;
-
-    // TODO: AFEGIR EL IDSERVER DEL QUE TRANSMET EL MISSATGE: per a que de tornada no li torni a arribar al que l'ha creat
-
-    printf("\n\n STEP 1\n");
-    if (server->next_server_direction.id_server != -1) {
-
-        printf("STEP 2\n");
-        if (TOOLS_connect_server(&fd, server->next_server_direction.ip_address, server->next_server_direction.passive_port) != EXIT_SUCCESS)
-            return EXIT_FAILURE;
-
-        printf("STEP 3\n");
-        if (FRAME_sendReadRequest(fd, id_server, id_trans) != EXIT_SUCCESS)
-            return EXIT_FAILURE;
-
-        printf("STEP 4\n");
-        if (FRAME_readReadResponse(fd, &version, &value) != EXIT_SUCCESS)
-            return EXIT_FAILURE;
-
-        printf("STEP 5\n");
-        server->next_server_direction = TOOLS_findDirection(server->servers_directions, server->total_servers, id_server);
-        server->data.version = version;
-        server->data.value = value;
-
-        if (FRAME_sendReadResponse(fd_client, version, value) != EXIT_SUCCESS)
-            return EXIT_FAILURE;
-
-    } else {
-        printf("STEP 6\n");
-        aux = TOOLS_findDirection(server->servers_directions, server->total_servers, id_server);
-        if (aux.id_server != -1) {
-            printf("STEP 7A\n");
-            server->next_server_direction = aux;
-        } else {
-            printf("STEP 7B\n");
-            return ERR_SRVR_NOT_FOUND;
-        }
-
-        printf("STEP 8\n");
-        if (TOOLS_connect_server(&fd, server->next_server_direction.ip_address, server->next_server_direction.passive_port) != EXIT_SUCCESS)
-            return EXIT_FAILURE;
-
-        printf("STEP 9\n");
-        if (FRAME_sendReadResponse(fd, server->data.value, server->data.version) != EXIT_SUCCESS)
-            return EXIT_FAILURE;
-
-        printf("STEP 10\n");
-        if (FRAME_readAck(fd) != EXIT_SUCCESS)
-            return ERR_ACK;
-
-        printf("STEP 11\n");
-        if (FRAME_sendReadResponse(fd_client, server->data.value, server->data.version) != EXIT_SUCCESS)
-            return EXIT_FAILURE;
-
-    }
-
-    return EXIT_SUCCESS;
-}
-
 int TRANSACTION_sendConnect(Server *server) {
     int server_fd, i, size;
     char * buffer;
@@ -130,7 +68,7 @@ int TRANSACTION_sendConnect(Server *server) {
         size = asprintf(&buffer, BOLD "Connexions inicialitzades\n" RESET);
         write(1, buffer, size);
         free(buffer);
-        TOOLS_printServerDirections(*server);
+        TOOLS_printDirections(server->servers_directions, server->total_servers);
     }
 
     return EXIT_SUCCESS;
@@ -161,7 +99,7 @@ int TRANSACTION_connectPassive(int fd_client, Server *server) {
     server->transaction_trees[server->total_servers]->smaller = NULL;
     server->transaction_trees[server->total_servers]->bigger = NULL;
 
-    TOOLS_printServerDirections(*server);
+    TOOLS_printDirections(server->servers_directions, server->total_servers);
 
     if (server->is_first) {
         if (FRAME_sendFirstConnectionResponse(fd_client, *server) == EXIT_FAILURE) return EXIT_FAILURE;
@@ -171,36 +109,34 @@ int TRANSACTION_connectPassive(int fd_client, Server *server) {
     return EXIT_SUCCESS;
 }
 
-
-
 int TRANSACTION_readActive(Server server) {
-    int active_fd, version, value, size;
+    int next_fd, version, value, size;
     char *buffer;
 
-    if (TOOLS_connect_server(&active_fd, server.next_server_direction.ip_address, server.next_server_direction.passive_port) == EXIT_FAILURE) {
-        close(active_fd);
-        return EXIT_FAILURE;
+    if (TOOLS_connect_server(&next_fd, server.next_server_direction.ip_address, server.next_server_direction.passive_port) == EXIT_FAILURE) {
+        close(next_fd);
+        return EXIT_NEXT_DOWN;
     }
 
     int id_transaction = TRANSACTION_generateId(server.transaction_trees[0]);
-    if(FRAME_sendReadRequest(active_fd, server.my_direction.id_server, id_transaction) == EXIT_FAILURE) {
-        close(active_fd);
-        return EXIT_FAILURE;
+    TRANSACTION_BINARY_TREE_add(&(server.transaction_trees[0]), id_transaction, server.my_direction.id_server);
+
+    if(FRAME_sendReadRequest(next_fd, server.my_direction.id_server, id_transaction) == EXIT_FAILURE) {
+        close(next_fd);
+        return EXIT_NEXT_DOWN;
     }
 
     size = asprintf(&buffer, BOLDYELLOW "Read request sent to server %d, %s:%d\n" RESET, server.next_server_direction.id_server, server.next_server_direction.ip_address, server.next_server_direction.passive_port);
     write(1, buffer, size);
     free(buffer);
 
-    TRANSACTION_BINARY_TREE_add(&(server.transaction_trees[0]), id_transaction, server.my_direction.id_server);
-
     // wait for response
     SEM_init(&sem_read_response, 0);
     SEM_wait(&sem_read_response);
     
-    if(FRAME_readReadResponse(active_fd, &version, &value) == EXIT_FAILURE) {
-        close(active_fd);
-        return EXIT_FAILURE;
+    if(FRAME_readReadResponse(next_fd, &version, &value) == EXIT_FAILURE) {
+        close(next_fd);
+        return EXIT_NEXT_DOWN;
     }
     return EXIT_SUCCESS;
 }
@@ -212,17 +148,20 @@ int TRANSACTION_readResponsePassive(int fd_client, Server *server) {
     if(FRAME_readOriginReadResponse(fd_client, &(server->data.version), &(server->data.value)) == EXIT_FAILURE) return EXIT_FAILURE;
     FRAME_sendAck(fd_client);
     server->next_server_direction.id_server = -1;
-    size = asprintf(&buffer, BOLDGREEN "Response received %d v_%d\n\n" RESET, server->data.version, server->data.value);
+
+    size = asprintf(&buffer, BOLDGREEN "Response received %d v_%d\n\n" RESET, server->data.value, server->data.version);
     write(1, buffer, size);
     free(buffer);
+    
     SEM_signal(&sem_read_response);
     return EXIT_SUCCESS;
 }
 
 int TRANSACTION_replyReadLastUpdated(int client_fd, int id_server, Server *server) {
-    Direction origin = TOOLS_findDirection(server->servers_directions, server->total_servers, id_server);
     int origin_fd, size;
     char *buffer;
+
+    Direction origin = TOOLS_findDirection(server->servers_directions, server->total_servers, id_server);
 
     if (TOOLS_connect_server(&origin_fd, 
                             origin.ip_address, 
@@ -237,7 +176,6 @@ int TRANSACTION_replyReadLastUpdated(int client_fd, int id_server, Server *serve
     TOOLS_copyNextServerDirection(id_server, &(server->next_server_direction), *server);
 
     if (FRAME_sendReadResponse(client_fd, server->data.version, server->data.value) == EXIT_FAILURE) return EXIT_FAILURE;
-    printf("Finish\n");
     return EXIT_SUCCESS;
 }
 
@@ -246,10 +184,10 @@ int TRANSACTION_replyReadCommon(int client_fd, int id_server, int id_trans, Serv
     char *buffer;
     if (TOOLS_connect_server(&next_fd,
                              server->next_server_direction.ip_address, 
-                             server->next_server_direction.passive_port) == EXIT_FAILURE) return EXIT_FAILURE; 
+                             server->next_server_direction.passive_port) == EXIT_FAILURE) return EXIT_NEXT_DOWN; 
 
-    if (FRAME_sendReadRequest(next_fd, id_server, id_trans) == EXIT_FAILURE) return EXIT_FAILURE;
-    if (FRAME_readReadResponse(next_fd, &(server->data.version), &(server->data.value)) == EXIT_FAILURE) return EXIT_FAILURE;
+    if (FRAME_sendReadRequest(next_fd, id_server, id_trans) == EXIT_FAILURE) return EXIT_NEXT_DOWN;
+    if (FRAME_readReadResponse(next_fd, &(server->data.version), &(server->data.value)) == EXIT_FAILURE) return EXIT_NEXT_DOWN;
 
     size = asprintf(&buffer, BOLDGREEN "Updated value recieved: %d v_%d\n\n" RESET, server->data.value, server->data.version);
     write(1, buffer, size);
@@ -265,18 +203,18 @@ int TRANSACTION_replyReadCommon(int client_fd, int id_server, int id_trans, Serv
 
 
 int TRANSACTION_updateActive(Server server) {
-    int active_fd, version, value, size;
+    int next_fd, version, value, size;
     char *buffer;
 
-    if (TOOLS_connect_server(&active_fd, server.next_server_direction.ip_address, server.next_server_direction.passive_port) == EXIT_FAILURE) {
-        close(active_fd);
-        return EXIT_FAILURE;
+    if (TOOLS_connect_server(&next_fd, server.next_server_direction.ip_address, server.next_server_direction.passive_port) == EXIT_FAILURE) {
+        close(next_fd);
+        return EXIT_NEXT_DOWN;
     }
 
     int id_transaction = TRANSACTION_generateId(server.transaction_trees[0]);
-    if(FRAME_sendUpdateRequest(active_fd, server.my_direction.id_server, id_transaction, server.operation) == EXIT_FAILURE) {
-        close(active_fd);
-        return EXIT_FAILURE;
+    if(FRAME_sendUpdateRequest(next_fd, server.my_direction.id_server, id_transaction, server.operation) == EXIT_FAILURE) {
+        close(next_fd);
+        return EXIT_NEXT_DOWN;
     }
 
     size = asprintf(&buffer, BOLDYELLOW "Update request sent to server %d, %s:%d\n" RESET, server.next_server_direction.id_server, server.next_server_direction.ip_address, server.next_server_direction.passive_port);
@@ -289,9 +227,9 @@ int TRANSACTION_updateActive(Server server) {
     SEM_init(&sem_read_response, 0);
     SEM_wait(&sem_read_response);
 
-    if(FRAME_readUpdateResponse(active_fd, &version, &value) == EXIT_FAILURE) {
-        close(active_fd);
-        return EXIT_FAILURE;
+    if(FRAME_readUpdateResponse(next_fd, &version, &value) == EXIT_FAILURE) {
+        close(next_fd);
+        return EXIT_NEXT_DOWN;
     }
     return EXIT_SUCCESS;
 }
@@ -303,7 +241,7 @@ int TRANSACTION_updateResponsePassive(int fd_client, Server *server) {
     if(FRAME_readOriginUpdateResponse(fd_client, &(server->data.version), &(server->data.value)) == EXIT_FAILURE) return EXIT_FAILURE;
     FRAME_sendAck(fd_client);
     server->next_server_direction.id_server = -1;
-    size = asprintf(&buffer, BOLDGREEN "Response received %d v_%d\n\n" RESET, server->data.version, server->data.value);
+    size = asprintf(&buffer, BOLDGREEN "Response received %d v_%d\n\n" RESET, server->data.value, server->data.version);
     write(1, buffer, size);
     free(buffer);
     SEM_signal(&sem_read_response);
@@ -330,7 +268,6 @@ int TRANSACTION_replyUpdateLastUpdated(int client_fd, int id_server, Server *ser
     TOOLS_copyNextServerDirection(id_server, &(server->next_server_direction), *server);
 
     if (FRAME_sendUpdateResponse(client_fd, server->data.version, server->data.value) == EXIT_FAILURE) return EXIT_FAILURE;
-    printf("Finish\n");
     return EXIT_SUCCESS;
 }
 
@@ -339,10 +276,10 @@ int TRANSACTION_replyUpdateCommon(int client_fd, int id_server, int id_trans, Se
     char *buffer;
     if (TOOLS_connect_server(&next_fd,
                              server->next_server_direction.ip_address,
-                             server->next_server_direction.passive_port) == EXIT_FAILURE) return EXIT_FAILURE;
+                             server->next_server_direction.passive_port) == EXIT_FAILURE) return EXIT_NEXT_DOWN;
 
-    if (FRAME_sendUpdateRequest(next_fd, id_server, id_trans, operation) == EXIT_FAILURE) return EXIT_FAILURE;
-    if (FRAME_readUpdateResponse(next_fd, &(server->data.version), &(server->data.value)) == EXIT_FAILURE) return EXIT_FAILURE;
+    if (FRAME_sendUpdateRequest(next_fd, id_server, id_trans, operation) == EXIT_FAILURE) return EXIT_NEXT_DOWN;
+    if (FRAME_readUpdateResponse(next_fd, &(server->data.version), &(server->data.value)) == EXIT_FAILURE) return EXIT_NEXT_DOWN;
 
     size = asprintf(&buffer, BOLDGREEN "Updated value recieved: %d v_%d\n\n" RESET, server->data.value, server->data.version);
     write(1, buffer, size);
@@ -353,4 +290,62 @@ int TRANSACTION_replyUpdateCommon(int client_fd, int id_server, int id_trans, Se
     // Enviamos la respuesta al que nos ha preguntado a nosotros
     if (FRAME_sendUpdateResponse(client_fd, server->data.version, server->data.value) == EXIT_FAILURE) return EXIT_FAILURE;
     return EXIT_SUCCESS;
+}
+
+void TRANSACTION_reconnect(Server * server) {
+    int i, return_val, ping_fd, version, value, isFirst, firstFound, size, new_server = 0;
+    char *buffer;
+
+    for (i=0; i < server->total_servers; i++) {
+        return_val = TOOLS_connect_server(&ping_fd,
+                                            server->servers_directions[i].ip_address,
+                                            server->servers_directions[i].ping_port); 
+        
+        if (return_val == EXIT_SUCCESS) return_val = FRAME_sendPingRequest(ping_fd);
+        if (return_val == EXIT_SUCCESS) return_val = FRAME_readPingResponse(ping_fd, &version, &value, &isFirst);
+
+        switch (return_val) {
+            case EXIT_FAILURE:
+                size = asprintf(&buffer, BOLDRED "Server %d is down. Removing it...\n" RESET, server->servers_directions[i].id_server);
+                write(1, buffer, size);
+                free(buffer);
+
+                TOOLS_removeDirection(server->servers_directions[i].id_server, &(server->servers_directions), &(server->total_servers));
+                i--;
+                break;
+
+            case EXIT_SUCCESS:
+                size = asprintf(&buffer, BOLDGREEN "Server %d is active.\n" RESET, server->servers_directions[i].id_server);
+                write(1, buffer, size);
+                free(buffer);
+                
+                if (isFirst || 
+                    (!firstFound && ((version > server->data.version) || 
+                                    (version == server->data.version && server->servers_directions[i].id_server > server->my_direction.id_server)))) {
+                    server->data.version = version;
+                    server->data.value = value;
+                    TOOLS_copyDirection(&(server->next_server_direction), server->servers_directions[i]);
+                    new_server = 1;
+                    if (isFirst) firstFound = 1;
+                } 
+                
+                if (version == server->data.version && value != server->data.value) {
+                    size = asprintf(&buffer, BOLDRED "Server %d has the same version with different value\n" RESET, server->servers_directions[i].id_server);
+                    write(1, buffer, size);
+                    free(buffer);
+                }
+                break;
+        }
+        close(ping_fd);
+        ping_fd = -1;
+    }
+
+    if (!new_server) {
+        server->next_server_direction.id_server = -1;
+    }
+    
+    TOOLS_printDirections(server->servers_directions, server->total_servers);
+    size = asprintf(&buffer, BOLDBLUE "Next server: %d" RESET, server->next_server_direction.id_server);
+    write(1, buffer, size);
+    free(buffer);
 }

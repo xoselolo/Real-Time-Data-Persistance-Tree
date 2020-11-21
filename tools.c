@@ -43,7 +43,7 @@ int TOOLS_connect_server(int* socket_fd, char* ip, int port) {
     if (*socket_fd < 0) {
         perror("socket creation");
         *socket_fd = -1;
-        raise(SIGINT);
+        return EXIT_FAILURE;
     }
 
     //Omplir l'adreça del servidor amb el port i ip indicats
@@ -51,7 +51,7 @@ int TOOLS_connect_server(int* socket_fd, char* ip, int port) {
     s_addr.sin_family = AF_INET;
     if (port < 1 || port > 65535) {
         perror("invalid port");
-        raise(SIGINT);
+        return EXIT_FAILURE;
     }
     s_addr.sin_port = htons(port);
     s_addr.sin_addr.s_addr = inet_addr(ip);
@@ -59,7 +59,6 @@ int TOOLS_connect_server(int* socket_fd, char* ip, int port) {
 
     //Connectar amb el servidor
     if (connect(*socket_fd, (void*)&s_addr, sizeof(s_addr)) < 0) {
-        perror("socket connection");
         close(*socket_fd);
         *socket_fd = -1;
         return EXIT_FAILURE;
@@ -123,21 +122,21 @@ int TOOLS_displayMenu() {
     return option;
 }
 
-void TOOLS_printServerDirections(Server server) {
+void TOOLS_printDirections(Direction *directions, int n_directions) {
     char *buffer;
     int size, i;
 
-    size = asprintf(&buffer, BOLDBLUE "\nTotal servers: %d\n" RESET, server.total_servers);
+    size = asprintf(&buffer, BOLDBLUE "\nTotal servers: %d\n" RESET, n_directions);
     write(1, buffer, size);
     free(buffer);
 
-    for (i=0; i < server.total_servers; i++) {
+    for (i=0; i < n_directions; i++) {
 
         size = asprintf(&buffer, BOLDBLUE "Server %d, Ip: %s, Passive port: %d, Ping port: %d\n" RESET, 
-                            server.servers_directions[i].id_server, 
-                            server.servers_directions[i].ip_address, 
-                            server.servers_directions[i].passive_port, 
-                            server.servers_directions[i].ping_port);
+                            directions[i].id_server, 
+                            directions[i].ip_address, 
+                            directions[i].passive_port, 
+                            directions[i].ping_port);
         write(1, buffer, size);
         free(buffer);
     }
@@ -176,4 +175,29 @@ void TOOLS_operate(int* value, int* version, Operation operation){
             break;
     }
     (*version) ++;
+}
+
+void TOOLS_copyDirection(Direction *direction, Direction values) {
+    direction->id_server = values.id_server;
+    direction->ip_address = values.ip_address;
+    direction->active_port = values.active_port;
+    direction->passive_port = values.passive_port;
+    direction->ping_port = values.ping_port;
+}
+
+void TOOLS_removeDirection(int id_server, Direction **directions, int *n_directions) {
+    int i, j;
+    
+    for (i=0; i<*n_directions; i++) {
+        if ((*directions)[i].id_server == id_server) {
+
+            free((*directions)[i].ip_address);
+
+            for (j=i+1; j<*n_directions; j++) {
+                TOOLS_copyDirection(&((*directions)[j-1]), (*directions)[j]);
+            }
+
+            *directions = (Direction *)realloc(*directions, sizeof(Direction)*((*n_directions)--));
+        }
+    }
 }
