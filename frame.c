@@ -286,7 +286,6 @@ int FRAME_readPingRequest(int fd) {
 }
 
 int FRAME_sendPingResponse(int fd, int version, int value, int isFirst) {
-    printf("isfirst %d\n", isFirst);
     if (write(fd, PING_STR, sizeof(char)) != sizeof(char)) return EXIT_FAILURE;
     if (write(fd, &version, sizeof(int)) != sizeof(int)) return EXIT_FAILURE;
     if (write(fd, &value, sizeof(int)) != sizeof(int)) return EXIT_FAILURE;
@@ -301,6 +300,5 @@ int FRAME_readPingResponse(int fd, int *version, int *value, int *isFirst) {
     if (read(fd, version, sizeof(int)) != sizeof(int)) return EXIT_FAILURE;
     if (read(fd, value, sizeof(int)) != sizeof(int)) return EXIT_FAILURE;
     if (read(fd, isFirst, sizeof(int)) != sizeof(int)) return EXIT_FAILURE;
-    printf("read isfirst %d\n", *isFirst);
     return EXIT_SUCCESS;
 }
