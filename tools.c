@@ -105,6 +105,21 @@ Direction TOOLS_findDirection(Direction * directions, int n_directions, int id_s
     return dir;
 }
 
+int TOOLS_replaceDirection(Direction * directions, int n_directions, Direction new_direction) {
+    int i = 0;
+
+    for (i = 0; i < n_directions; i++) {
+        if (directions[i].id_server == new_direction.id_server) {
+            free(directions[i].ip_address);
+            directions[i].ip_address = new_direction.ip_address;
+            directions[i].passive_port = new_direction.passive_port;
+            directions[i].ping_port = new_direction.ping_port;
+            return 1;
+        }
+    }
+    return 0;
+}
+
 int TOOLS_displayMenu() {
     int option;
     char *buffer;

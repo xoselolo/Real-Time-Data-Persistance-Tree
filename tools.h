@@ -18,4 +18,5 @@ void TOOLS_copyNextServerDirection(int id_server, Direction * next, Server serve
 void TOOLS_copyDirection(Direction *direction, Direction values);
 void TOOLS_operate(int* value, int* version, Operation operation);
 void TOOLS_removeDirection(int id_server, Direction **directions, int *n_directions);
+int TOOLS_replaceDirection(Direction * directions, int n_directions, Direction new_direction);
 #endif /* _TOOLS_H_ */

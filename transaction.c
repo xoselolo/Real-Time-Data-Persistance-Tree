@@ -48,7 +48,15 @@ int TRANSACTION_sendConnect(Server *server) {
 
             if (TOOLS_connect_server(&server_fd, 
                                 server->servers_directions[i].ip_address, 
-                                server->servers_directions[i].passive_port) == EXIT_FAILURE) return EXIT_FAILURE;
+                                server->servers_directions[i].passive_port) == EXIT_FAILURE) {
+                                    size = asprintf(&buffer, BOLDRED "Server %d is down. Removing it...\n" RESET, server->servers_directions[i].id_server);
+                                    write(1, buffer, size);
+                                    free(buffer);
+
+                                    TOOLS_removeDirection(server->servers_directions[i].id_server, &(server->servers_directions), &(server->total_servers));
+                                    
+                                    continue;
+                                }
             
             if (FRAME_sendConnectionRequest(server_fd, 
                                         server->my_direction.id_server,
@@ -78,20 +86,29 @@ int TRANSACTION_connectPassive(int fd_client, Server *server) {
     char first_notFirst;
     char *ip_addr;
     int passive_port, ping_port, id_server;
+    Direction new_direction;
 
     if (read(fd_client, &first_notFirst, sizeof(char)) != sizeof(char)) return EXIT_FAILURE;
     if ((server->is_first && first_notFirst != 'F') || (!server->is_first && first_notFirst != 'N')) return EXIT_FAILURE;
 
     if (FRAME_readConnectionRequest(fd_client, &id_server, &ip_addr, &passive_port, &ping_port) == EXIT_FAILURE) return EXIT_FAILURE;
 
-    server->servers_directions[server->total_servers].id_server = id_server;
-    server->servers_directions[server->total_servers].ip_address = ip_addr;
-    server->servers_directions[server->total_servers].passive_port = passive_port;
-    server->servers_directions[server->total_servers].ping_port = ping_port;
-    (server->total_servers)++;
+    new_direction.id_server = id_server;
+    new_direction.ip_address = ip_addr;
+    new_direction.passive_port = passive_port;
+    new_direction.ping_port = ping_port;
 
-    server->servers_directions = (Direction *)realloc(server->servers_directions, sizeof(Direction)*(server->total_servers + 1));
+    if (!TOOLS_replaceDirection(server->servers_directions, server->total_servers, new_direction)) {
+        server->servers_directions[server->total_servers].id_server = id_server;
+        server->servers_directions[server->total_servers].ip_address = ip_addr;
+        server->servers_directions[server->total_servers].passive_port = passive_port;
+        server->servers_directions[server->total_servers].ping_port = ping_port;
+        
+        (server->total_servers)++;
+        server->servers_directions = (Direction *)realloc(server->servers_directions, sizeof(Direction)*(server->total_servers + 1));
+    }
 
+    
     server->transaction_trees = (Node **)realloc(server->transaction_trees, sizeof(Node*) * server->total_servers + 1);
     server->transaction_trees[server->total_servers] = (Node*) malloc(sizeof(Node));
     server->transaction_trees[server->total_servers]->id_server = id_server;

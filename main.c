@@ -37,13 +37,14 @@ void memory_free(Server* server) {
 
     int size = asprintf(&buffer, BOLDRED "MEMORY FREE ----- 25/100.\n" RESET);
     write(1, buffer, size);
-
+    free(buffer);
     for (int i = 0; i < server->total_servers; i++) {
         TRANSACTION_BINARY_TREE_destroy(&(server->transaction_trees[i]));
     }
 
     size = asprintf(&buffer, BOLDRED "MEMORY FREE ----- 50/100.\n" RESET);
     write(1, buffer, size);
+    free(buffer);
 
     if (server->servers_directions != NULL){
         for (int i = 0; i < server->total_servers; i++) {
@@ -54,11 +55,12 @@ void memory_free(Server* server) {
     }
     size = asprintf(&buffer, BOLDRED "MEMORY FREE ----- 75/100.\n" RESET);
     write(1, buffer, size);
-
+    free(buffer);
     free(server->my_direction.ip_address);
 
     size = asprintf(&buffer, BOLDRED "MEMORY FREE ----- 100/100.\n" RESET);
     write(1, buffer, size);
+    free(buffer);
 }
 
 int main(int argc, char** argv) {
@@ -145,6 +147,7 @@ int main(int argc, char** argv) {
         }
 
         pthread_kill(t_passive, SIGINT);
+        pthread_kill(t_ping, SIGINT);
 
         memory_free(&server);
         free(buffer);
