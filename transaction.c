@@ -206,7 +206,7 @@ int TRANSACTION_replyReadCommon(int client_fd, int id_server, int id_trans, Serv
     if (FRAME_sendReadRequest(next_fd, id_server, id_trans) == EXIT_FAILURE) return EXIT_NEXT_DOWN;
     if (FRAME_readReadResponse(next_fd, &(server->data.version), &(server->data.value)) == EXIT_FAILURE) return EXIT_NEXT_DOWN;
 
-    size = asprintf(&buffer, BOLDGREEN "Updated value recieved: %d v_%d\n\n" RESET, server->data.value, server->data.version);
+    size = asprintf(&buffer, BOLDGREEN "Updated value received: %d v_%d \n\n" RESET, server->data.value, server->data.version);
     write(1, buffer, size);
     free(buffer);
 
@@ -298,7 +298,7 @@ int TRANSACTION_replyUpdateCommon(int client_fd, int id_server, int id_trans, Se
     if (FRAME_sendUpdateRequest(next_fd, id_server, id_trans, operation) == EXIT_FAILURE) return EXIT_NEXT_DOWN;
     if (FRAME_readUpdateResponse(next_fd, &(server->data.version), &(server->data.value)) == EXIT_FAILURE) return EXIT_NEXT_DOWN;
 
-    size = asprintf(&buffer, BOLDGREEN "Updated value recieved: %d v_%d\n\n" RESET, server->data.value, server->data.version);
+    size = asprintf(&buffer, BOLDGREEN "Updated value received: %d v_%d \n\n" RESET, server->data.value, server->data.version);
     write(1, buffer, size);
     free(buffer);
 

@@ -85,6 +85,7 @@ char* TOOLS_read_until(int fd, char end) {
     }
 
     string[i - 1] = '\0';
+    //string = (char*)realloc(string, sizeof(char) * (i));
     return string;
 }
 
