@@ -96,9 +96,11 @@ int main(int argc, char** argv) {
         for(int i = 0; i < 10; i++){
             // I'm the first or the top server
             if(server.next_server_direction.id_server == -1){ // NO hem de connectar-nos amb ningú
-                printf("I'm first\n");
                 if(server.is_read_only == 'R'){
-                    printf("Value (GET) v_%d  == %d\n", server.data.version, server.data.value);
+                    size = asprintf(&buffer, BOLDGREEN "\t[%d] - Read request made (I'm First) Value = %d, Version = %d\n" RESET, i, server.data.value, server.data.version);
+                    write(1, buffer, size);
+                    free(buffer);
+                    //printf("Value (GET) v_%d  == %d\n", server.data.version, server.data.value);
                 }else{
                     switch (server.operation.operator) {
                         case '+':
@@ -115,7 +117,10 @@ int main(int argc, char** argv) {
                             break;
                     }
                     server.data.version++;
-                    printf("Value (UPDATE) v_%d  == %d\n", server.data.version, server.data.value);
+                    //printf("Value (UPDATE) v_%d  == %d\n", server.data.version, server.data.value);
+                    size = asprintf(&buffer, BOLDGREEN "\t[%d] - Update request made (I'm First) Value = %d, Version = %d\n" RESET, i, server.data.value, server.data.version);
+                    write(1, buffer, size);
+                    free(buffer);
 
                 }
             }
@@ -148,7 +153,6 @@ int main(int argc, char** argv) {
         pthread_kill(t_ping, SIGINT);
 
         memory_free(&server);
-        free(buffer);
     }
 
 
