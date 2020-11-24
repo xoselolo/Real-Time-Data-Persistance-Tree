@@ -109,12 +109,12 @@ int TRANSACTION_connectPassive(int fd_client, Server *server) {
     }
 
     
-    server->transaction_trees = (Node **)realloc(server->transaction_trees, sizeof(Node*) * server->total_servers + 1);
+    /*server->transaction_trees = (Node **)realloc(server->transaction_trees, sizeof(Node*) * server->total_servers + 1);
     server->transaction_trees[server->total_servers] = (Node*) malloc(sizeof(Node));
     server->transaction_trees[server->total_servers]->id_server = id_server;
     server->transaction_trees[server->total_servers]->id_transaction = -1;
     server->transaction_trees[server->total_servers]->smaller = NULL;
-    server->transaction_trees[server->total_servers]->bigger = NULL;
+    server->transaction_trees[server->total_servers]->bigger = NULL;*/
 
     TOOLS_printDirections(server->servers_directions, server->total_servers);
 
@@ -135,15 +135,15 @@ int TRANSACTION_readActive(Server server, int i) {
         return EXIT_NEXT_DOWN;
     }
 
-    int id_transaction = TRANSACTION_generateId(server.transaction_trees[0]);
-    TRANSACTION_BINARY_TREE_add(&(server.transaction_trees[0]), id_transaction, server.my_direction.id_server);
+    int id_transaction = 38;//TRANSACTION_generateId(server.transaction_trees[0]);
+    //TRANSACTION_BINARY_TREE_add(&(server.transaction_trees[0]), id_transaction, server.my_direction.id_server);
 
     if(FRAME_sendReadRequest(next_fd, server.my_direction.id_server, id_transaction) == EXIT_FAILURE) {
         close(next_fd);
         return EXIT_NEXT_DOWN;
     }
 
-    size = asprintf(&buffer, BOLDYELLOW "\t[%d] - Read request sent to server %d, %s:%d\n" RESET, server.next_server_direction.id_server, i, server.next_server_direction.ip_address, server.next_server_direction.passive_port);
+    size = asprintf(&buffer, BOLDYELLOW "\t[%d] - Read request sent to server %d, %s:%d\n" RESET, i, server.next_server_direction.id_server, server.next_server_direction.ip_address, server.next_server_direction.passive_port);
     write(1, buffer, size);
     free(buffer);
 
@@ -228,7 +228,7 @@ int TRANSACTION_updateActive(Server server, int i) {
         return EXIT_NEXT_DOWN;
     }
 
-    int id_transaction = TRANSACTION_generateId(server.transaction_trees[0]);
+    int id_transaction = 38; //TRANSACTION_generateId(server.transaction_trees[0]);
     if(FRAME_sendUpdateRequest(next_fd, server.my_direction.id_server, id_transaction, server.operation) == EXIT_FAILURE) {
         close(next_fd);
         return EXIT_NEXT_DOWN;
@@ -238,7 +238,7 @@ int TRANSACTION_updateActive(Server server, int i) {
     write(1, buffer, size);
     free(buffer);
 
-    TRANSACTION_BINARY_TREE_add(&(server.transaction_trees[0]), id_transaction, server.my_direction.id_server);
+    //TRANSACTION_BINARY_TREE_add(&(server.transaction_trees[0]), id_transaction, server.my_direction.id_server);
 
     // wait for response
     SEM_init(&sem_read_response, 0);

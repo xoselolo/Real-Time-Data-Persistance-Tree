@@ -10,8 +10,6 @@ extern int ping_fd;
 extern int ping_client_fd;
 semaphore sem_read_response;
 
-void memory_free();
-
 static void sigint() {
     if (server_fd != -1) {
         close(server_fd);
@@ -38,9 +36,9 @@ void memory_free(Server* server) {
     int size = asprintf(&buffer, BOLDRED "MEMORY FREE ----- 25/100.\n" RESET);
     write(1, buffer, size);
     free(buffer);
-    for (int i = 0; i < server->total_servers; i++) {
+    /*for (int i = 0; i < server->total_servers; i++) {
         TRANSACTION_BINARY_TREE_destroy(&(server->transaction_trees[i]));
-    }
+    }*/
 
     size = asprintf(&buffer, BOLDRED "MEMORY FREE ----- 50/100.\n" RESET);
     write(1, buffer, size);
