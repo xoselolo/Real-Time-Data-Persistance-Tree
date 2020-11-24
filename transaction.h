@@ -16,13 +16,13 @@ int TRANSACTION_readPassive(Server *server, int fd_client, int id_server, int id
 
 int TRANSACTION_generateId(Node* root);
 
-int TRANSACTION_readActive(Server server);
+int TRANSACTION_readActive(Server server, int i);
 int TRANSACTION_readResponsePassive(int fd_client, Server *server);
 int TRANSACTION_replyReadLastUpdated(int client_fd, int id_server, Server *server);
 int TRANSACTION_replyReadCommon(int client_fd, int id_server, int id_trans, Server *server);
 
 
-int TRANSACTION_updateActive(Server server);
+int TRANSACTION_updateActive(Server server, int i);
 int TRANSACTION_updateResponsePassive(int fd_client, Server *server);
 int TRANSACTION_replyUpdateLastUpdated(int client_fd, int id_server, Server *server, Operation operation);
 int TRANSACTION_replyUpdateCommon(int client_fd, int id_server, int id_trans, Server *server, Operation operation);

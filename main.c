@@ -124,10 +124,10 @@ int main(int argc, char** argv) {
             else{
                 // CONNECT to (passive) next server
                 if(server.is_read_only == 'R'){
-                    return_val = TRANSACTION_readActive(server);
+                    return_val = TRANSACTION_readActive(server, i);
 
                 } else{
-                    return_val = TRANSACTION_updateActive(server);
+                    return_val = TRANSACTION_updateActive(server, i);
                 }
 
                 switch(return_val) {

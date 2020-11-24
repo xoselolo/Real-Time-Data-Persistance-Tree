@@ -126,7 +126,7 @@ int TRANSACTION_connectPassive(int fd_client, Server *server) {
     return EXIT_SUCCESS;
 }
 
-int TRANSACTION_readActive(Server server) {
+int TRANSACTION_readActive(Server server, int i) {
     int next_fd, version, value, size;
     char *buffer;
 
@@ -143,7 +143,7 @@ int TRANSACTION_readActive(Server server) {
         return EXIT_NEXT_DOWN;
     }
 
-    size = asprintf(&buffer, BOLDYELLOW "Read request sent to server %d, %s:%d\n" RESET, server.next_server_direction.id_server, server.next_server_direction.ip_address, server.next_server_direction.passive_port);
+    size = asprintf(&buffer, BOLDYELLOW "\t[%d] - Read request sent to server %d, %s:%d\n" RESET, server.next_server_direction.id_server, i, server.next_server_direction.ip_address, server.next_server_direction.passive_port);
     write(1, buffer, size);
     free(buffer);
 
@@ -219,7 +219,7 @@ int TRANSACTION_replyReadCommon(int client_fd, int id_server, int id_trans, Serv
 
 
 
-int TRANSACTION_updateActive(Server server) {
+int TRANSACTION_updateActive(Server server, int i) {
     int next_fd, version, value, size;
     char *buffer;
 
@@ -234,7 +234,7 @@ int TRANSACTION_updateActive(Server server) {
         return EXIT_NEXT_DOWN;
     }
 
-    size = asprintf(&buffer, BOLDYELLOW "Update request sent to server %d, %s:%d\n" RESET, server.next_server_direction.id_server, server.next_server_direction.ip_address, server.next_server_direction.passive_port);
+    size = asprintf(&buffer, BOLDYELLOW "\t[%d] - Update request sent to server %d, %s:%d\n" RESET, i, server.next_server_direction.id_server, server.next_server_direction.ip_address, server.next_server_direction.passive_port);
     write(1, buffer, size);
     free(buffer);
 
