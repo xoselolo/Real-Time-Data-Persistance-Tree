@@ -2,6 +2,7 @@
 
 int ping_fd = -1;
 int ping_client_fd = -1;
+extern semaphore sem_ping;
 
 void * PING_server(void * arg) {
 
@@ -17,6 +18,7 @@ void * PING_server(void * arg) {
     size = asprintf(&buffer, BOLDMAGENTA "Ping server started at %s:%d\n" RESET, server->my_direction.ip_address, server->my_direction.ping_port);
     write(1, buffer, size);
     free(buffer);
+    SEM_signal(&sem_ping);
 
     while (1) {
         ping_client_fd = accept(ping_fd, (void *) &s_addr, &len); 

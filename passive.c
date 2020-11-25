@@ -2,6 +2,7 @@
 
 int server_fd = -1;
 int client_fd = -1;
+extern semaphore sem_passive;
 
 void * PASSIVE_server(void * arg) {
 
@@ -22,6 +23,7 @@ void * PASSIVE_server(void * arg) {
     size = asprintf(&buffer, BOLDGREEN "Passive server started at %s:%d\n" RESET, server->my_direction.ip_address, server->my_direction.passive_port);
     write(1, buffer, size);
     free(buffer);
+    SEM_signal(&sem_passive);
 
     while (1) {
         //fd_passive_to_next = -1;
@@ -34,7 +36,13 @@ void * PASSIVE_server(void * arg) {
         
         switch (type) {
             case CONNECT:
+                size = asprintf(&buffer, BOLDMAGENTA "Connect received\n" RESET);
+                write(1, buffer, size);
+                free(buffer);
                 return_val = TRANSACTION_connectPassive(client_fd, server);
+                size = asprintf(&buffer, BOLDMAGENTA "Connect ended\n" RESET);
+                write(1, buffer, size);
+                free(buffer);
                 break;
 
             case READ:
@@ -67,7 +75,8 @@ void * PASSIVE_server(void * arg) {
                 size = asprintf(&buffer, BOLDMAGENTA "Update received\n" RESET);
                 write(1, buffer, size);
                 free(buffer);
-                FRAME_readUpdateRequest(client_fd, &id_server, &id_trans, &operation);
+                return_val = FRAME_readUpdateRequest(client_fd, &id_server, &id_trans, &operation);
+                if (return_val == EXIT_FAILURE) break;
                 if(server->next_server_direction.id_server == -1){
                     return_val = TRANSACTION_replyUpdateLastUpdated(client_fd, id_server, server, operation);
 

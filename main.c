@@ -9,6 +9,8 @@ extern int client_fd;
 extern int ping_fd;
 extern int ping_client_fd;
 semaphore sem_read_response;
+semaphore sem_passive;
+semaphore sem_ping;
 
 static void sigint() {
     if (server_fd != -1) {
@@ -73,6 +75,10 @@ int main(int argc, char** argv) {
     }else{
         SEM_constructor(&sem_read_response);
 	    SEM_init(&sem_read_response, 0);
+        SEM_constructor(&sem_passive);
+	    SEM_init(&sem_passive, 0);
+        SEM_constructor(&sem_ping);
+	    SEM_init(&sem_ping, 0);
 
         pthread_t t_passive;
         pthread_t t_ping;
@@ -90,8 +96,8 @@ int main(int argc, char** argv) {
 
         pthread_create(&t_passive, NULL, PASSIVE_server, &server);
         pthread_create(&t_ping, NULL, PING_server, &server);
-
-        // TODO: Create ping thread
+        SEM_wait(&sem_passive);
+        SEM_wait(&sem_ping);
 
         for(int i = 0; i < 10; i++){
             // I'm the first or the top server
@@ -127,9 +133,11 @@ int main(int argc, char** argv) {
             else{
                 // CONNECT to (passive) next server
                 if(server.is_read_only == 'R'){
+                    write(1, "TRANSACTION_readActive\n", strlen("TRANSACTION_readActive\n"));
                     return_val = TRANSACTION_readActive(server, i);
 
                 } else{
+                    write(1, "TRANSACTION_updateActive\n", strlen("TRANSACTION_updateActive\n"));
                     return_val = TRANSACTION_updateActive(server, i);
                 }
 

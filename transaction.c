@@ -76,7 +76,7 @@ int TRANSACTION_sendConnect(Server *server) {
         size = asprintf(&buffer, BOLD "Connexions inicialitzades\n" RESET);
         write(1, buffer, size);
         free(buffer);
-        TOOLS_printDirections(server->servers_directions, server->total_servers);
+        TOOLS_printDirections(*server);
     }
 
     return EXIT_SUCCESS;
@@ -116,7 +116,7 @@ int TRANSACTION_connectPassive(int fd_client, Server *server) {
     server->transaction_trees[server->total_servers]->smaller = NULL;
     server->transaction_trees[server->total_servers]->bigger = NULL;*/
 
-    TOOLS_printDirections(server->servers_directions, server->total_servers);
+    TOOLS_printDirections(*server);
 
     if (server->is_first) {
         if (FRAME_sendFirstConnectionResponse(fd_client, *server) == EXIT_FAILURE) return EXIT_FAILURE;
@@ -138,6 +138,7 @@ int TRANSACTION_readActive(Server server, int i) {
     int id_transaction = 38;//TRANSACTION_generateId(server.transaction_trees[0]);
     //TRANSACTION_BINARY_TREE_add(&(server.transaction_trees[0]), id_transaction, server.my_direction.id_server);
 
+    SEM_init(&sem_read_response, 0);
     if(FRAME_sendReadRequest(next_fd, server.my_direction.id_server, id_transaction) == EXIT_FAILURE) {
         close(next_fd);
         return EXIT_NEXT_DOWN;
@@ -148,7 +149,6 @@ int TRANSACTION_readActive(Server server, int i) {
     free(buffer);
 
     // wait for response
-    SEM_init(&sem_read_response, 0);
     SEM_wait(&sem_read_response);
     
     if(FRAME_readReadResponse(next_fd, &version, &value) == EXIT_FAILURE) {
@@ -229,6 +229,7 @@ int TRANSACTION_updateActive(Server server, int i) {
     }
 
     int id_transaction = 38; //TRANSACTION_generateId(server.transaction_trees[0]);
+    SEM_init(&sem_read_response, 0);
     if(FRAME_sendUpdateRequest(next_fd, server.my_direction.id_server, id_transaction, server.operation) == EXIT_FAILURE) {
         close(next_fd);
         return EXIT_NEXT_DOWN;
@@ -241,7 +242,6 @@ int TRANSACTION_updateActive(Server server, int i) {
     //TRANSACTION_BINARY_TREE_add(&(server.transaction_trees[0]), id_transaction, server.my_direction.id_server);
 
     // wait for response
-    SEM_init(&sem_read_response, 0);
     SEM_wait(&sem_read_response);
 
     if(FRAME_readUpdateResponse(next_fd, &version, &value) == EXIT_FAILURE) {
@@ -361,8 +361,5 @@ void TRANSACTION_reconnect(Server * server) {
         server->next_server_direction.id_server = -1;
     }
     
-    TOOLS_printDirections(server->servers_directions, server->total_servers);
-    size = asprintf(&buffer, BOLDBLUE "Next server: %d" RESET, server->next_server_direction.id_server);
-    write(1, buffer, size);
-    free(buffer);
+    TOOLS_printDirections(*server);
 }

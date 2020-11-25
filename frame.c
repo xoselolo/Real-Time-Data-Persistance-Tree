@@ -114,13 +114,21 @@ int FRAME_readConnectionResponse(int fd, int *id_server, int *version, int *valu
     READ PROTOCOL
 */
 int FRAME_readReadRequest(int fd, int * id_server, int * id_trans) {
+    int size;
+    char *buffer;
+    
     if (read(fd, id_server, sizeof(int)) != sizeof(int)) {
         return EXIT_FAILURE;
     }
-    
+    size = asprintf(&buffer, BOLDMAGENTA "Id server received %d\n" RESET, *id_server);
+    write(1, buffer, size);
+    free(buffer);
     if (read(fd, id_trans, sizeof(int)) != sizeof(int)) {
         return EXIT_FAILURE;
     }
+    size = asprintf(&buffer, BOLDMAGENTA "Id trans received %d\n" RESET, *id_trans);
+    write(1, buffer, size);
+    free(buffer);
 
     return EXIT_SUCCESS;
 } 
@@ -228,21 +236,37 @@ int FRAME_sendUpdateRequest(int active_fd, int id_server, int id_transaction, Op
 }
 
 int FRAME_readUpdateRequest(int fd, int * id_server, int * id_trans, Operation* operation) {
+    int size;
+    char *buffer;
+   
     if (read(fd, id_server, sizeof(int)) != sizeof(int)) {
         return EXIT_FAILURE;
     }
 
+    size = asprintf(&buffer, BOLDMAGENTA "Id server received %d\n" RESET, *id_server);
+    write(1, buffer, size);
+    free(buffer);
     if (read(fd, id_trans, sizeof(int)) != sizeof(int)) {
         return EXIT_FAILURE;
     }
+    size = asprintf(&buffer, BOLDMAGENTA "Id trans received %d\n" RESET, *id_trans);
+    write(1, buffer, size);
+    free(buffer);
 
     if (read(fd, &(operation->operator), sizeof(char )) != sizeof(char)) {
         return EXIT_FAILURE;
     }
 
+    size = asprintf(&buffer, BOLDMAGENTA "operator received %c\n" RESET, (operation->operator));
+    write(1, buffer, size);
+    free(buffer);
+
     if (read(fd, &(operation->operand), sizeof(int)) != sizeof(int)) {
         return EXIT_FAILURE;
     }
+    size = asprintf(&buffer, BOLDMAGENTA "operand received %d\n" RESET, (operation->operand));
+    write(1, buffer, size);
+    free(buffer);
 
     return EXIT_SUCCESS;
 }

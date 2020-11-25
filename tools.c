@@ -138,24 +138,28 @@ int TOOLS_displayMenu() {
     return option;
 }
 
-void TOOLS_printDirections(Direction *directions, int n_directions) {
+void TOOLS_printDirections(Server server) {
     char *buffer;
     int size, i;
 
-    size = asprintf(&buffer, BOLDBLUE "\nTotal servers: %d\n" RESET, n_directions);
+    size = asprintf(&buffer, BOLDBLUE "\nTotal servers: %d\n" RESET, server.total_servers);
     write(1, buffer, size);
     free(buffer);
 
-    for (i=0; i < n_directions; i++) {
+    for (i=0; i < server.total_servers; i++) {
 
         size = asprintf(&buffer, BOLDBLUE "Server %d, Ip: %s, Passive port: %d, Ping port: %d\n" RESET, 
-                            directions[i].id_server, 
-                            directions[i].ip_address, 
-                            directions[i].passive_port, 
-                            directions[i].ping_port);
+                            server.servers_directions[i].id_server, 
+                            server.servers_directions[i].ip_address, 
+                            server.servers_directions[i].passive_port, 
+                            server.servers_directions[i].ping_port);
         write(1, buffer, size);
         free(buffer);
     }
+
+    size = asprintf(&buffer, BOLDBLUE "Next server: %d\n" RESET, server.next_server_direction.id_server);
+    write(1, buffer, size);
+    free(buffer);
 
 }
 
