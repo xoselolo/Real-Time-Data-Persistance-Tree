@@ -14,9 +14,8 @@ void * PASSIVE_server(void * arg) {
     socklen_t len = sizeof(s_addr);
     int type;
     Operation operation;
-    //int fd_passive_to_next;
 
-    int id_server, id_trans;
+    int id_server;
 
     TOOLS_open_psocket(&server_fd, server->my_direction.ip_address, server->my_direction.passive_port);
 
@@ -26,7 +25,6 @@ void * PASSIVE_server(void * arg) {
     SEM_signal(&sem_passive);
 
     while (1) {
-        //fd_passive_to_next = -1;
         client_fd = accept(server_fd, (void *) &s_addr, &len);
         size = read(client_fd, &type, 1);
 
@@ -50,23 +48,14 @@ void * PASSIVE_server(void * arg) {
                 size = asprintf(&buffer, BOLDMAGENTA "Read received\n" RESET);
                 write(1, buffer, size);
                 free(buffer);
-                return_val = FRAME_readReadRequest(client_fd, &id_server, &id_trans);
+                return_val = FRAME_readReadRequest(client_fd, &id_server);
                 if (return_val == EXIT_FAILURE) break;
-                //Put the transaction on the tree
-                /* --> ToDo: Poner este cacho de código para comprobar si la transacción sigue en ciclo
-                int index_tree = TRANSACTION_BINARY_TREE_findRoot(server->transaction_trees, id_server, server->total_servers);
-                if (TRANSACTION_BINARY_TREE_exists(server->transaction_trees[index_tree], id_trans) == 0){
-                    printf("--- ADD TRANSACTION\n");
-                    TRANSACTION_BINARY_TREE_add(&(server->transaction_trees[index_tree]), id_trans, id_server);
-                }else{
-                    perror(ERR_TRANSACTION_EXISTS);
-                }*/
                 // check if i'm top or not
                 if(server->next_server_direction.id_server == -1){
                     return_val = TRANSACTION_replyReadLastUpdated(client_fd, id_server, server);
 
                 } else {
-                    return_val = TRANSACTION_replyReadCommon(client_fd, id_server, id_trans, server);
+                    return_val = TRANSACTION_replyReadCommon(client_fd, id_server, server);
                 }
 
                 break;
@@ -75,24 +64,14 @@ void * PASSIVE_server(void * arg) {
                 size = asprintf(&buffer, BOLDMAGENTA "Update received\n" RESET);
                 write(1, buffer, size);
                 free(buffer);
-                return_val = FRAME_readUpdateRequest(client_fd, &id_server, &id_trans, &operation);
+                return_val = FRAME_readUpdateRequest(client_fd, &id_server, &operation);
                 if (return_val == EXIT_FAILURE) break;
                 if(server->next_server_direction.id_server == -1){
                     return_val = TRANSACTION_replyUpdateLastUpdated(client_fd, id_server, server, operation);
 
                 } else {
-                    return_val = TRANSACTION_replyUpdateCommon(client_fd, id_server, id_trans, server, operation);
+                    return_val = TRANSACTION_replyUpdateCommon(client_fd, id_server, server, operation);
                 }
-                //Put the transaction on the tree
-                /* --> ToDo: Poner este cacho de código para comprobar si la transacción sigue en ciclo
-                int index_tree = TRANSACTION_BINARY_TREE_findRoot(server->transaction_trees, id_server, server->total_servers);
-                if (TRANSACTION_BINARY_TREE_exists(server->transaction_trees[index_tree], id_trans) == 0){
-                    printf("--- ADD TRANSACTION\n");
-                    TRANSACTION_BINARY_TREE_add(&(server->transaction_trees[index_tree]), id_trans, id_server);
-                }else{
-                    perror(ERR_TRANSACTION_EXISTS);
-                }
-                */
                 break;
 
             case READ_RESPONSE:

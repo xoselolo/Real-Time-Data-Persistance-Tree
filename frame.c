@@ -1,9 +1,5 @@
 #include "frame.h"
 
-/*
-CONNECTION PROTOCOL
-*/
-
 int FRAME_sendFirstConnectionRequest(int fd, int id_server, char * ip_addr, int passive_port, int ping_port) {
     if (write(fd, "C", sizeof(char)) != sizeof(char)) return EXIT_FAILURE;
     if (write(fd, "F", sizeof(char)) != sizeof(char)) return EXIT_FAILURE;
@@ -113,7 +109,7 @@ int FRAME_readConnectionResponse(int fd, int *id_server, int *version, int *valu
 /*
     READ PROTOCOL
 */
-int FRAME_readReadRequest(int fd, int * id_server, int * id_trans) {
+int FRAME_readReadRequest(int fd, int * id_server) {
     int size;
     char *buffer;
     
@@ -121,12 +117,6 @@ int FRAME_readReadRequest(int fd, int * id_server, int * id_trans) {
         return EXIT_FAILURE;
     }
     size = asprintf(&buffer, BOLDMAGENTA "Id server received %d\n" RESET, *id_server);
-    write(1, buffer, size);
-    free(buffer);
-    if (read(fd, id_trans, sizeof(int)) != sizeof(int)) {
-        return EXIT_FAILURE;
-    }
-    size = asprintf(&buffer, BOLDMAGENTA "Id trans received %d\n" RESET, *id_trans);
     write(1, buffer, size);
     free(buffer);
 
@@ -179,16 +169,14 @@ int FRAME_sendReadResponse(int fd, int version, int value) {
 } 
 
 /**
- * TRAMA = [ R id_server id_trans ]
+ * TRAMA = [ R id_server ]
  * @param fd
  * @param id_server
- * @param id_trans
  * @return
  */
-int FRAME_sendReadRequest(int fd, int id_server, int id_trans) {
+int FRAME_sendReadRequest(int fd, int id_server) {
     if (write(fd, READ_STR, sizeof(char)) != sizeof(char)) return EXIT_FAILURE;
     if (write(fd, &id_server, sizeof(int)) != sizeof(int)) return EXIT_FAILURE;
-    if (write(fd, &id_trans, sizeof(int)) != sizeof(int)) return EXIT_FAILURE;
     return EXIT_SUCCESS;
 }
 
@@ -208,7 +196,7 @@ int FRAME_readAck(int fd) {
     return EXIT_SUCCESS;
 }
 
-int FRAME_sendUpdateRequest(int active_fd, int id_server, int id_transaction, Operation operation);int FRAME_sendUpdateRequest(int active_fd, int id_server, int id_transaction, Operation operation){
+int FRAME_sendUpdateRequest(int active_fd, int id_server, Operation operation){
     int n;
 
     n = write(active_fd, "U", sizeof(char));
@@ -216,10 +204,6 @@ int FRAME_sendUpdateRequest(int active_fd, int id_server, int id_transaction, Op
         return -1;
     }
     n = write(active_fd, &id_server, sizeof(int));
-    if(n <= 0){
-        return -1;
-    }
-    n = write(active_fd, &id_transaction, sizeof(int));
     if(n <= 0){
         return -1;
     }
@@ -235,7 +219,7 @@ int FRAME_sendUpdateRequest(int active_fd, int id_server, int id_transaction, Op
     return EXIT_SUCCESS;
 }
 
-int FRAME_readUpdateRequest(int fd, int * id_server, int * id_trans, Operation* operation) {
+int FRAME_readUpdateRequest(int fd, int * id_server, Operation* operation) {
     int size;
     char *buffer;
    
@@ -244,12 +228,6 @@ int FRAME_readUpdateRequest(int fd, int * id_server, int * id_trans, Operation* 
     }
 
     size = asprintf(&buffer, BOLDMAGENTA "Id server received %d\n" RESET, *id_server);
-    write(1, buffer, size);
-    free(buffer);
-    if (read(fd, id_trans, sizeof(int)) != sizeof(int)) {
-        return EXIT_FAILURE;
-    }
-    size = asprintf(&buffer, BOLDMAGENTA "Id trans received %d\n" RESET, *id_trans);
     write(1, buffer, size);
     free(buffer);
 

@@ -30,8 +30,8 @@ int FRAME_readFirstConnectionResponse(int fd, Server *server);
 int FRAME_sendConnectionResponse(int fd, Server server);
 int FRAME_readConnectionResponse(int fd, int *id_server, int *version, int *value);
 
-int FRAME_readReadRequest(int fd, int * id_server, int * id_trans);
-int FRAME_sendReadRequest(int fd, int id_server, int id_trans);
+int FRAME_readReadRequest(int fd, int * id_server);
+int FRAME_sendReadRequest(int fd, int id_server);
 int FRAME_readReadResponse(int fd, int * version, int * value);
 int FRAME_readOriginReadResponse(int fd, int * version, int * value);
 int FRAME_sendReadResponse(int fd, int version, int value);
@@ -39,8 +39,8 @@ int FRAME_sendOriginReadResponse(int fd, int version, int value);
 int FRAME_readAck(int fd);
 int FRAME_sendAck(int fd);
 
-int FRAME_sendUpdateRequest(int active_fd, int id_server, int id_transaction, Operation operation);
-int FRAME_readUpdateRequest(int fd, int * id_server, int * id_trans, Operation* operation);
+int FRAME_sendUpdateRequest(int active_fd, int id_server, Operation operation);
+int FRAME_readUpdateRequest(int fd, int * id_server, Operation* operation);
 int FRAME_sendUpdateResponse(int fd, int version, int value);
 int FRAME_readUpdateResponse(int fd, int * version, int * value);
 

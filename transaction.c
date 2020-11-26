@@ -108,14 +108,6 @@ int TRANSACTION_connectPassive(int fd_client, Server *server) {
         server->servers_directions = (Direction *)realloc(server->servers_directions, sizeof(Direction)*(server->total_servers + 1));
     }
 
-    
-    /*server->transaction_trees = (Node **)realloc(server->transaction_trees, sizeof(Node*) * server->total_servers + 1);
-    server->transaction_trees[server->total_servers] = (Node*) malloc(sizeof(Node));
-    server->transaction_trees[server->total_servers]->id_server = id_server;
-    server->transaction_trees[server->total_servers]->id_transaction = -1;
-    server->transaction_trees[server->total_servers]->smaller = NULL;
-    server->transaction_trees[server->total_servers]->bigger = NULL;*/
-
     TOOLS_printDirections(*server);
 
     if (server->is_first) {
@@ -135,11 +127,8 @@ int TRANSACTION_readActive(Server server, int i) {
         return EXIT_NEXT_DOWN;
     }
 
-    int id_transaction = 38;//TRANSACTION_generateId(server.transaction_trees[0]);
-    //TRANSACTION_BINARY_TREE_add(&(server.transaction_trees[0]), id_transaction, server.my_direction.id_server);
-
     SEM_init(&sem_read_response, 0);
-    if(FRAME_sendReadRequest(next_fd, server.my_direction.id_server, id_transaction) == EXIT_FAILURE) {
+    if(FRAME_sendReadRequest(next_fd, server.my_direction.id_server) == EXIT_FAILURE) {
         close(next_fd);
         return EXIT_NEXT_DOWN;
     }
@@ -196,14 +185,14 @@ int TRANSACTION_replyReadLastUpdated(int client_fd, int id_server, Server *serve
     return EXIT_SUCCESS;
 }
 
-int TRANSACTION_replyReadCommon(int client_fd, int id_server, int id_trans, Server *server) {
+int TRANSACTION_replyReadCommon(int client_fd, int id_server, Server *server) {
     int next_fd, size;
     char *buffer;
     if (TOOLS_connect_server(&next_fd,
                              server->next_server_direction.ip_address, 
                              server->next_server_direction.passive_port) == EXIT_FAILURE) return EXIT_NEXT_DOWN; 
 
-    if (FRAME_sendReadRequest(next_fd, id_server, id_trans) == EXIT_FAILURE) return EXIT_NEXT_DOWN;
+    if (FRAME_sendReadRequest(next_fd, id_server) == EXIT_FAILURE) return EXIT_NEXT_DOWN;
     if (FRAME_readReadResponse(next_fd, &(server->data.version), &(server->data.value)) == EXIT_FAILURE) return EXIT_NEXT_DOWN;
 
     size = asprintf(&buffer, BOLDGREEN "Updated value received: %d v_%d \n\n" RESET, server->data.value, server->data.version);
@@ -228,9 +217,8 @@ int TRANSACTION_updateActive(Server server, int i) {
         return EXIT_NEXT_DOWN;
     }
 
-    int id_transaction = 38; //TRANSACTION_generateId(server.transaction_trees[0]);
     SEM_init(&sem_read_response, 0);
-    if(FRAME_sendUpdateRequest(next_fd, server.my_direction.id_server, id_transaction, server.operation) == EXIT_FAILURE) {
+    if(FRAME_sendUpdateRequest(next_fd, server.my_direction.id_server, server.operation) == EXIT_FAILURE) {
         close(next_fd);
         return EXIT_NEXT_DOWN;
     }
@@ -238,8 +226,6 @@ int TRANSACTION_updateActive(Server server, int i) {
     size = asprintf(&buffer, BOLDYELLOW "\t[%d] - Update request sent to server %d, %s:%d\n" RESET, i, server.next_server_direction.id_server, server.next_server_direction.ip_address, server.next_server_direction.passive_port);
     write(1, buffer, size);
     free(buffer);
-
-    //TRANSACTION_BINARY_TREE_add(&(server.transaction_trees[0]), id_transaction, server.my_direction.id_server);
 
     // wait for response
     SEM_wait(&sem_read_response);
@@ -288,14 +274,14 @@ int TRANSACTION_replyUpdateLastUpdated(int client_fd, int id_server, Server *ser
     return EXIT_SUCCESS;
 }
 
-int TRANSACTION_replyUpdateCommon(int client_fd, int id_server, int id_trans, Server *server, Operation operation) {
+int TRANSACTION_replyUpdateCommon(int client_fd, int id_server, Server *server, Operation operation) {
     int next_fd, size;
     char *buffer;
     if (TOOLS_connect_server(&next_fd,
                              server->next_server_direction.ip_address,
                              server->next_server_direction.passive_port) == EXIT_FAILURE) return EXIT_NEXT_DOWN;
 
-    if (FRAME_sendUpdateRequest(next_fd, id_server, id_trans, operation) == EXIT_FAILURE) return EXIT_NEXT_DOWN;
+    if (FRAME_sendUpdateRequest(next_fd, id_server, operation) == EXIT_FAILURE) return EXIT_NEXT_DOWN;
     if (FRAME_readUpdateResponse(next_fd, &(server->data.version), &(server->data.value)) == EXIT_FAILURE) return EXIT_NEXT_DOWN;
 
     size = asprintf(&buffer, BOLDGREEN "Updated value received: %d v_%d \n\n" RESET, server->data.value, server->data.version);

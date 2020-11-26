@@ -35,14 +35,7 @@ static void sigint() {
 void memory_free(Server* server) {
     char* buffer;
 
-    int size = asprintf(&buffer, BOLDRED "MEMORY FREE ----- 25/100.\n" RESET);
-    write(1, buffer, size);
-    free(buffer);
-    /*for (int i = 0; i < server->total_servers; i++) {
-        TRANSACTION_BINARY_TREE_destroy(&(server->transaction_trees[i]));
-    }*/
-
-    size = asprintf(&buffer, BOLDRED "MEMORY FREE ----- 50/100.\n" RESET);
+    int size = asprintf(&buffer, BOLDRED "MEMORY FREE ----- 50/100.\n" RESET);
     write(1, buffer, size);
     free(buffer);
 
@@ -106,7 +99,6 @@ int main(int argc, char** argv) {
                     size = asprintf(&buffer, BOLDGREEN "\t[%d] - Read request made (I'm First) Value = %d, Version = %d\n" RESET, i, server.data.value, server.data.version);
                     write(1, buffer, size);
                     free(buffer);
-                    //printf("Value (GET) v_%d  == %d\n", server.data.version, server.data.value);
                 }else{
                     switch (server.operation.operator) {
                         case '+':
@@ -123,7 +115,6 @@ int main(int argc, char** argv) {
                             break;
                     }
                     server.data.version++;
-                    //printf("Value (UPDATE) v_%d  == %d\n", server.data.version, server.data.value);
                     size = asprintf(&buffer, BOLDGREEN "\t[%d] - Update request made (I'm First) Value = %d, Version = %d\n" RESET, i, server.data.value, server.data.version);
                     write(1, buffer, size);
                     free(buffer);
