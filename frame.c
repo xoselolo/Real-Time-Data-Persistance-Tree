@@ -110,16 +110,7 @@ int FRAME_readConnectionResponse(int fd, int *id_server, int *version, int *valu
     READ PROTOCOL
 */
 int FRAME_readReadRequest(int fd, int * id_server) {
-    int size;
-    char *buffer;
-    
-    if (read(fd, id_server, sizeof(int)) != sizeof(int)) {
-        return EXIT_FAILURE;
-    }
-    size = asprintf(&buffer, BOLDMAGENTA "Id server received %d\n" RESET, *id_server);
-    write(1, buffer, size);
-    free(buffer);
-
+    if (read(fd, id_server, sizeof(int)) != sizeof(int)) return EXIT_FAILURE;
     return EXIT_SUCCESS;
 } 
 
@@ -220,38 +211,14 @@ int FRAME_sendUpdateRequest(int active_fd, int id_server, Operation operation){
 }
 
 int FRAME_readUpdateRequest(int fd, int * id_server, Operation* operation) {
-    int size;
-    char *buffer;
-   
-    if (read(fd, id_server, sizeof(int)) != sizeof(int)) {
-        return EXIT_FAILURE;
-    }
-
-    size = asprintf(&buffer, BOLDMAGENTA "Id server received %d\n" RESET, *id_server);
-    write(1, buffer, size);
-    free(buffer);
-
-    if (read(fd, &(operation->operator), sizeof(char )) != sizeof(char)) {
-        return EXIT_FAILURE;
-    }
-
-    size = asprintf(&buffer, BOLDMAGENTA "operator received %c\n" RESET, (operation->operator));
-    write(1, buffer, size);
-    free(buffer);
-
-    if (read(fd, &(operation->operand), sizeof(int)) != sizeof(int)) {
-        return EXIT_FAILURE;
-    }
-    size = asprintf(&buffer, BOLDMAGENTA "operand received %d\n" RESET, (operation->operand));
-    write(1, buffer, size);
-    free(buffer);
+    if (read(fd, id_server, sizeof(int)) != sizeof(int)) return EXIT_FAILURE;
+    if (read(fd, &(operation->operator), sizeof(char )) != sizeof(char)) return EXIT_FAILURE;
+    if (read(fd, &(operation->operand), sizeof(int)) != sizeof(int)) return EXIT_FAILURE;
 
     return EXIT_SUCCESS;
 }
 
 int FRAME_sendUpdateResponse(int fd, int version, int value) {
-    write(1, "Sending...\n", strlen("Sending...\n") * sizeof(char));
-
     if (write(fd, &version, sizeof(int)) != sizeof(int)) {
         return EXIT_FAILURE;
     }

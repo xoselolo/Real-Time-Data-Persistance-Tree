@@ -164,8 +164,7 @@ int TRANSACTION_readResponsePassive(int fd_client, Server *server) {
 }
 
 int TRANSACTION_replyReadLastUpdated(int client_fd, int id_server, Server *server) {
-    int origin_fd, size;
-    char *buffer;
+    int origin_fd;
 
     Direction origin = TOOLS_findDirection(server->servers_directions, server->total_servers, id_server);
 
@@ -174,10 +173,6 @@ int TRANSACTION_replyReadLastUpdated(int client_fd, int id_server, Server *serve
                             origin.passive_port) == EXIT_FAILURE) return EXIT_FAILURE;
     if (FRAME_sendOriginReadResponse(origin_fd, server->data.version, server->data.value) == EXIT_FAILURE) return EXIT_FAILURE;
     if (FRAME_readAck(origin_fd) == EXIT_FAILURE) return EXIT_FAILURE;
-
-    size = asprintf(&buffer, BOLDGREEN "Successfully sent the last updated value: %d v_%d\n\n" RESET, server->data.value, server->data.version);
-    write(1, buffer, size);
-    free(buffer);
 
     TOOLS_copyNextServerDirection(id_server, &(server->next_server_direction), *server);
 
@@ -255,18 +250,13 @@ int TRANSACTION_replyUpdateLastUpdated(int client_fd, int id_server, Server *ser
     TOOLS_operate(&server->data.value, &server->data.version, operation);
 
     Direction origin = TOOLS_findDirection(server->servers_directions, server->total_servers, id_server);
-    int origin_fd, size;
-    char *buffer;
+    int origin_fd;
 
     if (TOOLS_connect_server(&origin_fd,
                              origin.ip_address,
                              origin.passive_port) == EXIT_FAILURE) return EXIT_FAILURE;
     if (FRAME_sendOriginUpdateResponse(origin_fd, server->data.version, server->data.value) == EXIT_FAILURE) return EXIT_FAILURE;
     if (FRAME_readAck(origin_fd) == EXIT_FAILURE) return EXIT_FAILURE;
-
-    size = asprintf(&buffer, BOLDGREEN "Successfully sent the last updated value: %d v_%d\n\n" RESET, server->data.value, server->data.version);
-    write(1, buffer, size);
-    free(buffer);
 
     TOOLS_copyNextServerDirection(id_server, &(server->next_server_direction), *server);
 

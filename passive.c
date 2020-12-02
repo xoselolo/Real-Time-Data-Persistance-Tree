@@ -34,44 +34,48 @@ void * PASSIVE_server(void * arg) {
         
         switch (type) {
             case CONNECT:
-                size = asprintf(&buffer, BOLDMAGENTA "Connect received\n" RESET);
-                write(1, buffer, size);
-                free(buffer);
                 return_val = TRANSACTION_connectPassive(client_fd, server);
-                size = asprintf(&buffer, BOLDMAGENTA "Connect ended\n" RESET);
-                write(1, buffer, size);
-                free(buffer);
                 break;
 
             case READ:
-
-                size = asprintf(&buffer, BOLDMAGENTA "Read received\n" RESET);
-                write(1, buffer, size);
-                free(buffer);
                 return_val = FRAME_readReadRequest(client_fd, &id_server);
                 if (return_val == EXIT_FAILURE) break;
                 // check if i'm top or not
-                if(server->next_server_direction.id_server == -1){
-                    return_val = TRANSACTION_replyReadLastUpdated(client_fd, id_server, server);
 
-                } else {
-                    return_val = TRANSACTION_replyReadCommon(client_fd, id_server, server);
-                }
+                do {
+                    if(server->next_server_direction.id_server == -1){
+                        return_val = TRANSACTION_replyReadLastUpdated(client_fd, id_server, server);
 
+                    } else {
+                        return_val = TRANSACTION_replyReadCommon(client_fd, id_server, server);
+                        if (return_val == EXIT_NEXT_DOWN) {
+                            size = asprintf(&buffer, BOLDRED "Next server is down, trying to reconnect...\n" RESET);
+                            write(1, buffer, size);
+                            free(buffer);
+                            TRANSACTION_reconnect(server);
+                        }
+                    } 
+                } while (return_val == EXIT_NEXT_DOWN);
                 break;
 
             case UPDATE:
-                size = asprintf(&buffer, BOLDMAGENTA "Update received\n" RESET);
-                write(1, buffer, size);
-                free(buffer);
                 return_val = FRAME_readUpdateRequest(client_fd, &id_server, &operation);
                 if (return_val == EXIT_FAILURE) break;
-                if(server->next_server_direction.id_server == -1){
-                    return_val = TRANSACTION_replyUpdateLastUpdated(client_fd, id_server, server, operation);
 
-                } else {
-                    return_val = TRANSACTION_replyUpdateCommon(client_fd, id_server, server, operation);
-                }
+                do {
+                    if(server->next_server_direction.id_server == -1){
+                        return_val = TRANSACTION_replyUpdateLastUpdated(client_fd, id_server, server, operation);
+
+                    } else {
+                        return_val = TRANSACTION_replyUpdateCommon(client_fd, id_server, server, operation);
+                        if (return_val == EXIT_NEXT_DOWN) {
+                            size = asprintf(&buffer, BOLDRED "Next server is down, trying to reconnect...\n" RESET);
+                            write(1, buffer, size);
+                            free(buffer);
+                            TRANSACTION_reconnect(server);
+                        }
+                    } 
+                } while (return_val == EXIT_NEXT_DOWN);
                 break;
 
             case READ_RESPONSE:
@@ -88,16 +92,6 @@ void * PASSIVE_server(void * arg) {
                 size = asprintf(&buffer, BOLDRED "Error on transaction of type %c\n" RESET, type);
                 write(1, buffer, size);
                 free(buffer);
-                break;
-            
-            case EXIT_NEXT_DOWN:
-                size = asprintf(&buffer, BOLDRED "Next server is down, trying to reconnect...\n" RESET);
-                write(1, buffer, size);
-                free(buffer);
-                TRANSACTION_reconnect(server);
-                break;
-    
-            default:
                 break;
         }
 
