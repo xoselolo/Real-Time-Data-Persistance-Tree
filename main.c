@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
 
     Server server;
     char *buffer;
-    int size, return_val;
+    int size, return_val, next_down = 0;
     signal(SIGINT, sigint);
 
     if (argc != 2){
@@ -94,55 +94,60 @@ int main(int argc, char** argv) {
 
         for(int i = 0; i < 10; i++){
             // I'm the first or the top server
-            if(server.next_server_direction.id_server == -1){ // NO hem de connectar-nos amb ningú
-                if(server.is_read_only == 'R'){
-                    size = asprintf(&buffer, BOLDGREEN "\t[%d] - Read request made (I'm First) Value = %d, Version = %d\n" RESET, i, server.data.value, server.data.version);
-                    write(1, buffer, size);
-                    free(buffer);
-                }else{
-                    switch (server.operation.operator) {
-                        case '+':
-                            server.data.value += server.operation.operand;
-                            break;
-                        case '-':
-                            server.data.value -= server.operation.operand;
-                            break;
-                        case '*':
-                            server.data.value *= server.operation.operand;
-                            break;
-                        case '/':
-                            server.data.value /= server.operation.operand;
-                            break;
-                    }
-                    server.data.version++;
-                    size = asprintf(&buffer, BOLDGREEN "\t[%d] - Update request made (I'm First) Value = %d, Version = %d\n" RESET, i, server.data.value, server.data.version);
-                    write(1, buffer, size);
-                    free(buffer);
-
-                }
-            }
-            else{
-                // CONNECT to (passive) next server
-                if(server.is_read_only == 'R'){
-                    write(1, "TRANSACTION_readActive\n", strlen("TRANSACTION_readActive\n"));
-                    return_val = TRANSACTION_readActive(server, i);
-
-                } else{
-                    write(1, "TRANSACTION_updateActive\n", strlen("TRANSACTION_updateActive\n"));
-                    return_val = TRANSACTION_updateActive(server, i);
-                }
-
-                switch(return_val) {
-                    case EXIT_NEXT_DOWN:
-                        size = asprintf(&buffer, BOLDRED "Next server is down, trying to reconnect...\n" RESET);
+            do {
+                next_down = 0;
+                if(server.next_server_direction.id_server == -1){ // NO hem de connectar-nos amb ningú
+                    if(server.is_read_only == 'R'){
+                        size = asprintf(&buffer, BOLDGREEN "\t[%d] - Read request made (I'm First) Value = %d, Version = %d\n" RESET, i, server.data.value, server.data.version);
                         write(1, buffer, size);
                         free(buffer);
-                        TRANSACTION_reconnect(&server);
-                        break;
+                    }else{
+                        switch (server.operation.operator) {
+                            case '+':
+                                server.data.value += server.operation.operand;
+                                break;
+                            case '-':
+                                server.data.value -= server.operation.operand;
+                                break;
+                            case '*':
+                                server.data.value *= server.operation.operand;
+                                break;
+                            case '/':
+                                server.data.value /= server.operation.operand;
+                                break;
+                        }
+                        server.data.version++;
+                        size = asprintf(&buffer, BOLDGREEN "\t[%d] - Update request made (I'm First) Value = %d, Version = %d\n" RESET, i, server.data.value, server.data.version);
+                        write(1, buffer, size);
+                        free(buffer);
+
+                    }
                 }
+                else{
+                    // CONNECT to (passive) next server
+                    if(server.is_read_only == 'R'){
+                        write(1, "TRANSACTION_readActive\n", strlen("TRANSACTION_readActive\n"));
+                        return_val = TRANSACTION_readActive(server, i);
+
+                    } else{
+                        write(1, "TRANSACTION_updateActive\n", strlen("TRANSACTION_updateActive\n"));
+                        return_val = TRANSACTION_updateActive(server, i);
+                    }
+
+                    switch(return_val) {
+                        case EXIT_NEXT_DOWN:
+                            size = asprintf(&buffer, BOLDRED "Next server is down, trying to reconnect...\n" RESET);
+                            write(1, buffer, size);
+                            free(buffer);
+                            TRANSACTION_reconnect(&server);
+                            next_down = 1;
+                            break;
+                    }
 
 
-            }
+                }
+            } while (next_down == 1);
+            
 
             sleep(server.sleep_time);
 
