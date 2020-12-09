@@ -15,6 +15,7 @@ Server server;
 
 void memory_free(Server server) {
 
+    free(server.next_server_direction.ip_address);
     if (server.servers_directions != NULL){
         for (int i = 0; i < server.total_servers; i++) {
             free(server.servers_directions[i].ip_address);
