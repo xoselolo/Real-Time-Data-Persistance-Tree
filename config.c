@@ -12,6 +12,7 @@ Server readConfig(char* filename){
     }else{
         aux = TOOLS_read_until(fdReadConfig, '\n');
         me.my_direction.id_server = atoi(aux);
+        free(aux);
         printf("ID SERVER: %d\n", me.my_direction.id_server);
 
         read(fdReadConfig, &(me.is_read_only), sizeof(char));
@@ -62,7 +63,7 @@ Server readConfig(char* filename){
         me.servers_directions[0].ip_address = TOOLS_read_until(fdReadConfig, '\n');
         if(me.servers_directions[0].ip_address[0] == '\0'){
             // there is no server to connect to (we're the first)
-            free(me.servers_directions);
+            //free(me.servers_directions);
             me.next_server_direction.id_server = -1;
             me.is_first = 1;
 
@@ -74,14 +75,17 @@ Server readConfig(char* filename){
             aux = TOOLS_read_until(fdReadConfig, '\n');
             printf("\t\tId server: %d\n", atoi(aux));
             me.servers_directions[0].id_server = atoi(aux);
+            free(aux);
 
             aux = TOOLS_read_until(fdReadConfig, '\n');
             printf("\t\tPassive port: %d\n", atoi(aux));
             me.servers_directions[0].passive_port = atoi(aux);
+            free(aux);
 
             aux = TOOLS_read_until(fdReadConfig, '\n');
             printf("\t\tPing port: %d\n", atoi(aux));
             me.servers_directions[0].ping_port = atoi(aux);
+            free(aux);
 
             me.next_server_direction.id_server = me.servers_directions[0].id_server;
             me.next_server_direction.passive_port = me.servers_directions[0].passive_port;
@@ -94,7 +98,7 @@ Server readConfig(char* filename){
             me.total_servers++;
 
         }
-
+        close(fdReadConfig);
     }
 
     TOOLS_printDirections(me);
