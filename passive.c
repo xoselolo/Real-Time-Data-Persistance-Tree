@@ -12,7 +12,7 @@ void * PASSIVE_server(void * arg) {
     int return_val = EXIT_SUCCESS;
     struct sockaddr_in s_addr;
     socklen_t len = sizeof(s_addr);
-    int type;
+    char type;
     Operation operation;
 
     int id_server;
@@ -26,6 +26,7 @@ void * PASSIVE_server(void * arg) {
 
     while (1) {
         client_fd = accept(server_fd, (void *) &s_addr, &len);
+
         size = read(client_fd, &type, 1);
 
         if (size != 1) {
@@ -98,4 +99,6 @@ void * PASSIVE_server(void * arg) {
         close(client_fd);
         client_fd = -1;
     }
+    write(1, "out passive\n", strlen("out passive\n"));
+    return NULL;
 }

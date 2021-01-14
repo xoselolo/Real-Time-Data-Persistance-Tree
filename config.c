@@ -65,6 +65,7 @@ Server readConfig(char* filename){
             // there is no server to connect to (we're the first)
             //free(me.servers_directions);
             me.next_server_direction.id_server = -1;
+            free(me.servers_directions[0].ip_address);
             me.is_first = 1;
 
         }else{
@@ -91,9 +92,9 @@ Server readConfig(char* filename){
             me.next_server_direction.passive_port = me.servers_directions[0].passive_port;
             me.next_server_direction.ping_port = me.servers_directions[0].ping_port;
 
-            me.next_server_direction.ip_address = (char *)malloc(sizeof(char)*strlen(me.servers_directions[0].ip_address)+1);
+            me.next_server_direction = me.servers_directions[0];/*.ip_address = (char *)malloc(sizeof(char)*strlen(me.servers_directions[0].ip_address)+1);
             me.next_server_direction.ip_address[0] = 0;
-            strcat(me.next_server_direction.ip_address, me.servers_directions[0].ip_address);
+            strcat(me.next_server_direction.ip_address, me.servers_directions[0].ip_address);*/
 
             me.total_servers++;
 

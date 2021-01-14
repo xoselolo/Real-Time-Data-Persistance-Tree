@@ -30,4 +30,6 @@ void * PING_server(void * arg) {
         close(ping_client_fd);
         ping_client_fd = -1;
     }
+    write(1, "out ping\n", strlen("out ping\n"));
+    return NULL;
 }

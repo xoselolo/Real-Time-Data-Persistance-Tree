@@ -142,6 +142,13 @@ int FRAME_sendOriginReadResponse(int fd, int version, int value) {
     if (write(fd, READ_RESPONSE_STR, sizeof(char)) != sizeof(char)) return EXIT_FAILURE;
     if (write(fd, &version, sizeof(int)) != sizeof(int)) return EXIT_FAILURE;
     if (write(fd, &value, sizeof(int)) != sizeof(int))  return EXIT_FAILURE;
+
+    char *buffer;
+    int size;
+    size = asprintf(&buffer, BOLDGREEN "%d v%d sent\n" RESET, value, version);
+    write(1, buffer, size);
+    free(buffer);
+
     return EXIT_SUCCESS;
 }
 
@@ -149,6 +156,13 @@ int FRAME_sendOriginUpdateResponse(int fd, int version, int value) {
     if (write(fd, UPDATE_RESPONSE_STR, sizeof(char)) != sizeof(char)) return EXIT_FAILURE;
     if (write(fd, &version, sizeof(int)) != sizeof(int)) return EXIT_FAILURE;
     if (write(fd, &value, sizeof(int)) != sizeof(int))  return EXIT_FAILURE;
+
+    char *buffer;
+    int size;
+    size = asprintf(&buffer, BOLDGREEN "%d v%d sent\n" RESET, value, version);
+    write(1, buffer, size);
+    free(buffer);
+    
     return EXIT_SUCCESS;
 }
 

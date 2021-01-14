@@ -114,7 +114,6 @@ int TRANSACTION_connectPassive(int fd_client, Server *server) {
 
     if (!TOOLS_replaceDirection(server->servers_directions, server->total_servers, new_direction)) {
         server->servers_directions[server->total_servers].id_server = id_server;
-        printf("ipaddr: %s\n", ip_addr);
         server->servers_directions[server->total_servers].ip_address = ip_addr;
         server->servers_directions[server->total_servers].passive_port = passive_port;
         server->servers_directions[server->total_servers].ping_port = ping_port;

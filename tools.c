@@ -112,6 +112,7 @@ int TOOLS_replaceDirection(Direction * directions, int n_directions, Direction n
     for (i = 0; i < n_directions; i++) {
         if (directions[i].id_server == new_direction.id_server) {
             free(directions[i].ip_address);
+            directions[i].ip_address = NULL;
             directions[i].ip_address = new_direction.ip_address;
             directions[i].passive_port = new_direction.passive_port;
             directions[i].ping_port = new_direction.ping_port;
@@ -219,5 +220,12 @@ void TOOLS_removeDirection(int id_server, Direction **directions, int *n_directi
 
             *directions = (Direction *)realloc(*directions, sizeof(Direction)*((*n_directions)--));
         }
+    }
+}
+
+void TOOLS_free(char **buffer) {
+    if (*buffer != NULL){
+        free(*buffer);
+        *buffer = NULL;
     }
 }

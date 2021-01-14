@@ -12,21 +12,29 @@ semaphore sem_read_response;
 semaphore sem_passive;
 semaphore sem_ping;
 Server server;
+pthread_t t_passive;
+pthread_t t_ping;
 
 void memory_free(Server server) {
-
-    free(server.next_server_direction.ip_address);
     if (server.servers_directions != NULL){
         for (int i = 0; i < server.total_servers; i++) {
-            free(server.servers_directions[i].ip_address);
+            TOOLS_free(&server.servers_directions[i].ip_address);
         }
-        free(server.servers_directions);
 
+        free(server.servers_directions);
+        server.servers_directions = NULL;
+        
     }
-    free(server.my_direction.ip_address);
+    
+    TOOLS_free(&server.my_direction.ip_address);
 }
 
 static void sigint() {
+
+    pthread_cancel(t_passive);
+    pthread_cancel(t_ping);
+    pthread_join(t_passive, NULL);
+    pthread_join(t_ping, NULL);
     if (server_fd != -1) {
         close(server_fd);
         server_fd = -1;
@@ -43,6 +51,9 @@ static void sigint() {
         close(ping_client_fd);
         ping_client_fd = -1;
     }
+    SEM_destructor(&sem_read_response);
+    SEM_destructor(&sem_passive);
+    SEM_destructor(&sem_ping);
     memory_free(server);
     raise(SIGKILL);
 }
@@ -62,9 +73,6 @@ int main(int argc, char** argv) {
 	    SEM_init(&sem_passive, 0);
         SEM_constructor(&sem_ping);
 	    SEM_init(&sem_ping, 0);
-
-        pthread_t t_passive;
-        pthread_t t_ping;
 
         server.data.value = -1;
         server.data.version = -1;
@@ -141,10 +149,8 @@ int main(int argc, char** argv) {
 
         }
 
-        pthread_kill(t_passive, SIGINT);
-        pthread_kill(t_ping, SIGINT);        
+             
     }
-
     raise(SIGINT);
     return 0;
 }
