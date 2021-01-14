@@ -162,7 +162,7 @@ int FRAME_sendOriginUpdateResponse(int fd, int version, int value) {
     size = asprintf(&buffer, BOLDGREEN "%d v%d sent\n" RESET, value, version);
     write(1, buffer, size);
     free(buffer);
-    
+
     return EXIT_SUCCESS;
 }
 
